@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="个人简历">
+  <meta name="robots" content="noindex, nofollow">
+  <title>个人简历</title>
+  <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg">
+  <!-- 简历样式：静态文件（只含排版，不含任何个人资料） -->
+  <link rel="stylesheet" href="assets/css/resume.css">
+  <style>
+    /* ===== 锁屏样式：放在 resume.css 之后，用于覆盖它的全局底色 ===== */
+    /* 背景直接用 default.png 并模糊 10px（见下方 body::before）。
+       前面的 #1b1b23 只是图片没加载出来时的兜底底色。 */
+    body.locked {
+      display: flex; align-items: center; justify-content: center;
+      min-height: 100vh; padding: 20px;
+      background: #1b1b23;
+    }
+    /* 背景图：模糊 10px（与卡片页一致）。用 fixed 的 ::before 承载，
+       避免 filter:blur 把正文也糊掉，inset 外扩 40px 补偿边缘露白。 */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: -40px;
+      z-index: -1;
+      background: #1b1b23 url('assets/img/default.png') center center / cover no-repeat;
+      filter: blur(10px);
+      pointer-events: none;
+    }
+    .card {
+      width: 100%; max-width: 560px; background: #fff;
+      border-radius: 20px; padding: 40px;
+      box-shadow: 0 20px 60px rgba(0,0,0,.25);
+    }
+    .lock-card { max-width: 400px; text-align: center; }
+    .lock-ico {
+      width: 84px; height: 84px; margin: 0 auto 18px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      box-shadow: 0 8px 20px rgba(102,126,234,.4);
+    }
+    .lock-title { margin: 0; font-size: 24px; font-weight: 700; color: #333; }
+    .lock-sub { color: #8892b0; font-size: 13px; line-height: 1.7; margin: 8px 0 22px; }
+    .lock-form input {
+      width: 100%; padding: 13px 16px; font-size: 16px;
+      border: 1.5px solid #dfe3f0; border-radius: 12px; outline: none; color: #333;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    .lock-form input:focus { border-color: #667eea; box-shadow: 0 0 0 3px rgba(102,126,234,.18); }
+    .lock-form button {
+      width: 100%; margin-top: 12px; padding: 13px 16px; font-size: 16px; font-weight: bold;
+      color: #fff; letter-spacing: 6px;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      border: none; border-radius: 12px; cursor: pointer;
+      transition: transform .1s, box-shadow .2s, opacity .2s;
+    }
+    .lock-form button:hover { box-shadow: 0 8px 20px rgba(102,126,234,.4); }
+    .lock-form button:active { transform: translateY(1px); }
+    .lock-form button:disabled { opacity: .6; cursor: wait; }
+    .lock-msg { min-height: 22px; margin: 14px 0 0; font-size: 13px; color: #e2574c; }
+    .lock-foot { margin: 4px 0 0; font-size: 12px; color: #c0c5d4; }
+    @keyframes shake {
+      10%, 90% { transform: translateX(-2px); }
+      20%, 80% { transform: translateX(3px); }
+      30%, 50%, 70% { transform: translateX(-5px); }
+      40%, 60% { transform: translateX(5px); }
+    }
+    .shake { animation: shake .45s ease; }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+    .reveal { animation: fadeUp .5s ease; }
+    /* ===== 解锁后的浮动操作组：跳另一页 + 锁定 ===== */
+    .page-actions {
+      position: fixed; right: 18px; bottom: 18px; z-index: 99;
+      display: flex; gap: 10px; align-items: center;
+    }
+    .action-btn {
+      padding: 9px 18px; font-size: 13px; font-family: inherit; line-height: 1.4;
+      border: none; border-radius: 999px; cursor: pointer; text-decoration: none;
+      box-shadow: 0 4px 14px rgba(0,0,0,.2);
+      transition: transform .1s, box-shadow .2s, background .2s;
+    }
+    .action-btn:hover { transform: translateY(-1px); }
+    .action-btn:active { transform: translateY(0); }
+    .action-nav { color: #fff; font-weight: bold;
+      background: linear-gradient(135deg, #667eea, #764ba2); }
+    .action-nav:hover { box-shadow: 0 8px 20px rgba(102,126,234,.5); }
+    .action-lock { color: #fff; background: rgba(31,94,168,.85); }
+    .action-lock:hover { background: rgba(31,94,168,1); }
+    @media print { .page-actions { display: none; } }
+  </style>
+</head>
+<body class="locked">
+
+  <!-- 锁屏 -->
+  <div class="card lock-card" id="lockCard">
+    <div class="lock-ico" aria-hidden="true">
+      <svg viewBox="0 0 24 24" width="38" height="38" fill="none"
+           stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="4" y="11" width="16" height="10" rx="2"/>
+        <path d="M8 11V7a4 4 0 0 1 8 0v4"/>
+      </svg>
+    </div>
+    <h1 class="lock-title">个人简历</h1>
+    <p class="lock-sub">本页简历已加密保存，<br>请输入访问密码进行解密查看。</p>
+
+    <form id="loginForm" class="lock-form" novalidate autocomplete="off">
+      <input id="pwInput" type="password" placeholder="请输入访问密码"
+             autocomplete="off" spellcheck="false" autocapitalize="off" />
+      <button id="enterBtn" type="submit">解 锁</button>
+    </form>
+    <p class="lock-msg" id="msgLine"></p>
+    <p class="lock-foot">忘记密码请联系作者</p>
+  </div>
+
+  <noscript>
+    <div class="card"><p>本页需要启用 JavaScript 才能解密显示。</p></div>
+  </noscript>
+
+  <!-- 解密后的简历正文（初始为空，解密成功后填充） -->
+  <main id="resumeHost" hidden></main>
+
+  <!-- 解锁后才显示的操作组：跳另一页 + 锁定 -->
+  <div class="page-actions" id="pageActions" hidden>
+    <a class="action-btn action-nav" id="navBtn" href="index.html" title="查看个人简介">← 个人简介</a>
+    <button class="action-btn action-lock" id="lockBtn" type="button" title="重新隐藏本页内容">锁定</button>
+  </div>
+
+  <script src="assets/js/gdit-crypto.js"></script>
+  <script>
+    (function () {
+
+      // 加密数据（由 build.js 注入，base64 密文）
+      var payload = {"v":1,"iter":20000,"salt":"70e29ba810de007eb720ad90521a36ef","c":"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"};
+
+      var lockCard = document.getElementById('lockCard');
+      var host = document.getElementById('resumeHost');
+      var form = document.getElementById('loginForm');
+      var input = document.getElementById('pwInput');
+      var btn = document.getElementById('enterBtn');
+      var msgLine = document.getElementById('msgLine');
+      var busy = false;
+
+      /* ===== 站点级公共逻辑（由 build.js 注入，两页共用）===== */
+      var SESSION_KEY = 'gdit_unlock_v1';
+
+      function readSession() {
+        try { return sessionStorage.getItem(SESSION_KEY) || ""; } catch (e) { return ""; }
+      }
+      function saveSession(pw) {
+        try { sessionStorage.setItem(SESSION_KEY, pw); } catch (e) { /* 隐私模式静默忽略 */ }
+      }
+      function clearSession() {
+        try { sessionStorage.removeItem(SESSION_KEY); } catch (e) { /* 忽略 */ }
+      }
+
+      /** 从地址栏取 ?pw= / #pw=，并立刻把密码从地址栏抹掉 */
+      function takePwFromUrl() {
+        var raw = (location.search || "") + (location.hash || "");
+        var m = raw.match(/[?&#]pw=([^&#]+)/i);
+        if (!m) return "";
+        var pw = "";
+        try { pw = decodeURIComponent(m[1]); } catch (e) { pw = ""; }
+        try {
+          var clean = new URL(location.href);
+          clean.searchParams.delete("pw");
+          if (/^pw=/i.test(clean.hash.slice(1))) clean.hash = '';
+          history.replaceState(null, "", clean.toString());
+        } catch (e) { /* 忽略 */ }
+        return pw;
+      }
+
+      /** 解锁成功后打开右下角浮动操作组（跳另一页 + 锁定）*/
+      function showActions() {
+        var box = document.getElementById("pageActions");
+        if (box) box.hidden = false;
+      }
+
+      /** 锁定：清掉会话密码，回到锁屏（公共电脑临时离开时用）*/
+      function lockNow() {
+        clearSession();
+        location.reload();
+      }
+
+
+      function render(plain) {
+        host.innerHTML = plain;
+        host.hidden = false;
+        host.classList.add("reveal");
+        document.body.classList.remove("locked");
+        lockCard.style.display = "none";
+        document.title = "个人简历";
+        showActions();
+        window.scrollTo(0, 0);
+      }
+
+      function shake() {
+        lockCard.classList.remove("shake");
+        void lockCard.offsetWidth; // 重新触发抖动动画
+        lockCard.classList.add("shake");
+      }
+
+      /** 尝试解密并渲染。silent=true 时不提示错误（用于自动解锁）。返回是否成功。 */
+      function attempt(pw, silent) {
+        var plain;
+        try {
+          plain = GditCrypto.decrypt(payload.c, pw, payload.salt, payload.iter);
+        } catch (e) { plain = null; }
+        if (plain === null) {
+          if (!silent) {
+            shake();
+            msgLine.textContent = "密码错误，请重试";
+          }
+          return false;
+        }
+        var data;
+        try { data = JSON.parse(plain); } catch (e) { data = null; }
+        if (!data || typeof data.html !== "string") {
+          if (!silent) { shake(); msgLine.textContent = "内容损坏，无法解密"; }
+          return false;
+        }
+        saveSession(pw);
+        render(data.html);
+        return true;
+      }
+
+      form.addEventListener("submit", function (e) {
+        e.preventDefault();
+        if (busy) return;
+        var pw = input.value;
+        if (!pw) { input.focus(); return; }
+        busy = true;
+        btn.disabled = true;
+        msgLine.textContent = "";
+        // 让出一帧，先刷新按钮禁用态
+        setTimeout(function () {
+          attempt(pw, false);
+          busy = false;
+          btn.disabled = false;
+          if (document.body.classList.contains("locked") && input.value) {
+            input.value = ""; input.focus();
+          }
+        }, 30);
+      });
+
+      input.addEventListener("keydown", function (e) {
+        if (e.key === "Escape") { input.value = ""; }
+      });
+
+      // ===== 1) 会话内已解锁过：直接进正文，不再弹锁屏 =====
+      var saved = readSession();
+      if (saved && attempt(saved, true)) {
+        // 已在正文页，收工
+      } else if (saved) {
+        clearSession(); // 存的是旧密码（比如重新 build 换了密码），丢掉
+      }
+
+      // ===== 2) 地址栏 ?pw= / #pw=：填进输入框，等用户点解锁 =====
+      var fromUrl = takePwFromUrl();
+      if (fromUrl) {
+        input.value = fromUrl;
+        input.style.borderColor = "#667eea";
+        input.style.boxShadow = "0 0 0 3px rgba(102,126,234,0.25)";
+        input.focus();
+        input.select();
+      } else {
+        input.focus();
+      }
+
+      input.addEventListener("input", function () {
+        if (input.style.borderColor === "#667eea") {
+          input.style.borderColor = "";
+          input.style.boxShadow = "";
+        }
+      });
+
+      var lockBtn = document.getElementById("lockBtn");
+      if (lockBtn) lockBtn.addEventListener("click", lockNow);
+    })();
+  </script>
+</body>
+</html>

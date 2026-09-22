@@ -3,53 +3,135 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="个人简历">
-  <meta name="robots" content="noindex, nofollow">
-  <title>个人简历</title>
-  <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg">
-  <!-- 简历样式：静态文件（只含排版，不含任何个人资料） -->
-  <link rel="stylesheet" href="assets/css/resume.css">
+  <title>个人简介</title>
   <style>
-    /* ===== 锁屏样式：放在 resume.css 之后，用于覆盖它的全局底色 ===== */
-    /* 背景直接用 default.png：不再叠紫色蒙版、不做模糊，原图什么样就什么样。
-       前面的 #1b1b23 只是图片没加载出来时的兜底底色。 */
-    body.locked {
-      display: flex; align-items: center; justify-content: center;
-      min-height: 100vh; padding: 20px;
-      background: #1b1b23 url('assets/img/default.png') center center / cover no-repeat fixed;
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: "Microsoft YaHei", "PingFang SC", "Helvetica Neue", Arial, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      /* 兜底底色：图片没加载出来时显示；真正的模糊背景由下方 body::before 提供 */
+      background: #1b1b23;
+      padding: 20px;
     }
+
     .card {
-      width: 100%; max-width: 560px; background: #fff;
-      border-radius: 20px; padding: 40px;
-      box-shadow: 0 20px 60px rgba(0,0,0,.25);
+      width: 100%;
+      max-width: 560px;
+      background: #ffffff;
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
     }
+
+    .avatar {
+      width: 96px;
+      height: 96px;
+      margin: 0 auto 20px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: #fff;
+      font-size: 40px;
+      font-weight: bold;
+      letter-spacing: 2px;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 28px;
+      color: #333;
+      margin-bottom: 4px;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #8892b0;
+      font-size: 14px;
+      margin-bottom: 28px;
+    }
+
+    .info-item { display: flex; padding: 14px 0; border-bottom: 1px solid #f0f0f5; }
+    .info-item:last-child { border-bottom: none; }
+    .label { flex: 0 0 80px; font-weight: bold; color: #555; }
+    .value { color: #222; flex: 1; line-height: 1.6; }
+
+    .hobbies { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 6px; }
+    .tag {
+      display: inline-block;
+      background: #eef0ff; color: #667eea;
+      padding: 6px 14px; border-radius: 20px; font-size: 13px;
+      text-decoration: none;
+      transition: background .15s, transform .1s;
+    }
+    a.tag { cursor: pointer; }
+    a.tag:hover {
+      background: #dfe4ff;
+      transform: translateY(-1px);
+    }
+    a.tag:active { transform: translateY(0); }
+
+    .school-link {
+      color: #d32f2f;
+      font-weight: 600;
+      text-decoration: none;
+    }
+    .school-link:hover { text-decoration: underline; }
+
+    /* ---------- 锁屏 ---------- */
     .lock-card { max-width: 400px; text-align: center; }
+
     .lock-ico {
-      width: 84px; height: 84px; margin: 0 auto 18px; border-radius: 50%;
+      width: 84px; height: 84px; margin: 0 auto 18px;
+      border-radius: 50%;
       display: flex; align-items: center; justify-content: center;
       background: linear-gradient(135deg, #667eea, #764ba2);
-      box-shadow: 0 8px 20px rgba(102,126,234,.4);
+      box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
     }
-    .lock-title { margin: 0; font-size: 24px; font-weight: 700; color: #333; }
+
+    .lock-title { font-size: 24px; }
     .lock-sub { color: #8892b0; font-size: 13px; line-height: 1.7; margin: 8px 0 22px; }
+
     .lock-form input {
-      width: 100%; padding: 13px 16px; font-size: 16px;
-      border: 1.5px solid #dfe3f0; border-radius: 12px; outline: none; color: #333;
+      width: 100%;
+      padding: 13px 16px;
+      font-size: 16px;
+      border: 1.5px solid #dfe3f0;
+      border-radius: 12px;
+      outline: none;
+      color: #333;
       transition: border-color .2s, box-shadow .2s;
     }
-    .lock-form input:focus { border-color: #667eea; box-shadow: 0 0 0 3px rgba(102,126,234,.18); }
+    .lock-form input:focus {
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.18);
+    }
     .lock-form button {
-      width: 100%; margin-top: 12px; padding: 13px 16px; font-size: 16px; font-weight: bold;
-      color: #fff; letter-spacing: 6px;
+      width: 100%;
+      margin-top: 12px;
+      padding: 13px 16px;
+      font-size: 16px;
+      font-weight: bold;
+      color: #fff;
+      letter-spacing: 6px;
       background: linear-gradient(135deg, #667eea, #764ba2);
-      border: none; border-radius: 12px; cursor: pointer;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
       transition: transform .1s, box-shadow .2s, opacity .2s;
     }
-    .lock-form button:hover { box-shadow: 0 8px 20px rgba(102,126,234,.4); }
+    .lock-form button:hover { box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4); }
     .lock-form button:active { transform: translateY(1px); }
     .lock-form button:disabled { opacity: .6; cursor: wait; }
-    .lock-msg { min-height: 22px; margin: 14px 0 0; font-size: 13px; color: #e2574c; }
-    .lock-foot { margin: 4px 0 0; font-size: 12px; color: #c0c5d4; }
+
+    .lock-msg { min-height: 22px; margin-top: 14px; font-size: 13px; color: #e2574c; }
+    .lock-foot { margin-top: 4px; font-size: 12px; color: #c0c5d4; }
+
     @keyframes shake {
       10%, 90% { transform: translateX(-2px); }
       20%, 80% { transform: translateX(3px); }
@@ -57,9 +139,15 @@
       40%, 60% { transform: translateX(5px); }
     }
     .shake { animation: shake .45s ease; }
-    @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
     .reveal { animation: fadeUp .5s ease; }
-    /* ===== 解锁后的浮动操作组：个人简介入口 + 锁定 ===== */
+
+    /* ---------- 解锁后的浮动操作组：跳另一页 + 锁定（由 build.js 注入，两页共用）---------- */
+    /* ===== 解锁后的浮动操作组：跳另一页 + 锁定 ===== */
     .page-actions {
       position: fixed; right: 18px; bottom: 18px; z-index: 99;
       display: flex; gap: 10px; align-items: center;
@@ -72,19 +160,31 @@
     }
     .action-btn:hover { transform: translateY(-1px); }
     .action-btn:active { transform: translateY(0); }
-    /* 个人简介入口：做成醒目的品牌色胶囊，一解锁就能看见 */
-    .action-intro {
-      color: #fff; font-weight: bold;
-      background: linear-gradient(135deg, #667eea, #764ba2);
-    }
-    .action-intro:hover { box-shadow: 0 8px 20px rgba(102,126,234,.5); }
-    .action-intro::after { content: " →"; }
+    .action-nav { color: #fff; font-weight: bold;
+      background: linear-gradient(135deg, #667eea, #764ba2); }
+    .action-nav:hover { box-shadow: 0 8px 20px rgba(102,126,234,.5); }
     .action-lock { color: #fff; background: rgba(31,94,168,.85); }
     .action-lock:hover { background: rgba(31,94,168,1); }
     @media print { .page-actions { display: none; } }
+
+
+    /* ---------- 背景图：模糊 10px + 兜底底色（由 build.js 注入，两页共用）---------- */
+    /* ===== 背景图：模糊 10px（用户要求）+ 兜底底色 =====
+       用 fixed 的 ::before 承载图片，避免 filter:blur 把正文也糊掉，
+       inset 外扩 40px 补偿模糊后的边缘露白。 */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: -40px;
+      z-index: -1;
+      background: #1b1b23 url('assets/img/default.png') center center / cover no-repeat;
+      filter: blur(10px);
+      pointer-events: none;
+    }
+
   </style>
 </head>
-<body class="locked">
+<body>
 
   <!-- 锁屏 -->
   <div class="card lock-card" id="lockCard">
@@ -95,8 +195,8 @@
         <path d="M8 11V7a4 4 0 0 1 8 0v4"/>
       </svg>
     </div>
-    <h1 class="lock-title">个人简历</h1>
-    <p class="lock-sub">本页简历已加密保存，<br>请输入访问密码进行解密查看。</p>
+    <h1 class="lock-title">个人简介</h1>
+    <p class="lock-sub">本页资料已加密保存，<br>请输入访问密码进行解密查看。</p>
 
     <form id="loginForm" class="lock-form" novalidate autocomplete="off">
       <input id="pwInput" type="password" placeholder="请输入访问密码"
@@ -107,128 +207,466 @@
     <p class="lock-foot">忘记密码请联系作者</p>
   </div>
 
-  <noscript>
-    <div class="card"><p>本页需要启用 JavaScript 才能解密显示。</p></div>
-  </noscript>
+  <!-- 解密后的正文（初始为空，解密成功后填充） -->
+  <div class="card" id="profileCard" hidden></div>
 
-  <!-- 解密后的简历正文（初始为空，解密成功后填充） -->
-  <main id="resumeHost" hidden></main>
+  <!-- 「跳另一页 + 锁定」操作组占位符：由 build.js 注入（单文件版替换为空字符串） -->
+  <!-- 解锁后才显示的操作组：跳另一页 + 锁定 -->
+  <div class="page-actions" id="pageActions" hidden>
+    <a class="action-btn action-nav" id="navBtn" href="intro.html" title="查看个人简历">个人简历 →</a>
+    <button class="action-btn action-lock" id="lockBtn" type="button" title="重新隐藏本页内容">锁定</button>
+  </div>
 
-  <script src="assets/js/gdit-crypto.js"></script>
   <script>
+
+/*
+ * gdit-crypto.js —— 纯 JS、零依赖的“内容加密/解密”模块。
+ *
+ * 重要说明（请务必理解）：
+ *   这是纯前端(静态)方案。浏览器必须先执行 JS 才能解密渲染内容，
+ *   因此任何懂开发工具的人都能改 JS 绕过校验。本模块的作用只是：
+ *     1) 让真正的资料正文(姓名/学号/班级…)在源码与文件里不出现明文；
+ *     2) 必须输入正确密码才能得到明文。
+ *   它【不能】提供真正的安全保护，仅用于提高“查看门槛”。
+ *
+ * 算法：
+ *   密钥 = PBKDF2-HMAC-SHA256(password, salt, iterations, 32字节)
+ *   密钥流 = HMAC-SHA256(密钥, 计数器0,1,2,…) 产生的伪随机字节
+ *   密文 = 明文(带标记前缀) XOR 密钥流
+ *   明文(UTF-8) 以固定标记开头，用于在校验错误时识别“密码错误”。
+ */
+(function (root) {
+  'use strict';
+
+  var MARKER = '__GDIT_OK__';
+  var DEFAULT_ITER = 20000;
+  var KEY_LEN = 32; // 派生密钥长度 32 字节
+
+  /* ---------------- SHA-256 ---------------- */
+
+  var K256 = new Uint32Array([
+    0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5,
+    0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3, 0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174,
+    0xe49b69c1, 0xefbe4786, 0x0fc19dc6, 0x240ca1cc, 0x2de92c6f, 0x4a7484aa, 0x5cb0a9dc, 0x76f988da,
+    0x983e5152, 0xa831c66d, 0xb00327c8, 0xbf597fc7, 0xc6e00bf3, 0xd5a79147, 0x06ca6351, 0x14292967,
+    0x27b70a85, 0x2e1b2138, 0x4d2c6dfc, 0x53380d13, 0x650a7354, 0x766a0abb, 0x81c2c92e, 0x92722c85,
+    0xa2bfe8a1, 0xa81a664b, 0xc24b8b70, 0xc76c51a3, 0xd192e819, 0xd6990624, 0xf40e3585, 0x106aa070,
+    0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5, 0x391c0cb3, 0x4ed8aa4a, 0x5b9cca4f, 0x682e6ff3,
+    0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208, 0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2
+  ]);
+
+  function rotr(x, n) { return (x >>> n) | (x << (32 - n)); }
+
+  function sha256(bytes) {
+    var l = bytes.length;
+    var bitLenHi = Math.floor(l / 0x20000000); // 总比特数的高32位
+    var bitLenLo = (l << 3) >>> 0;             // 总比特数的低32位
+    var paddedLen = (((l + 1 + 8 + 63) >> 6) << 6); // 向上取整到 64 的倍数
+    var msg = new Uint8Array(paddedLen);
+    msg.set(bytes);
+    msg[l] = 0x80;
+    var dv = new DataView(msg.buffer);
+    dv.setUint32(paddedLen - 8, bitLenHi);
+    dv.setUint32(paddedLen - 4, bitLenLo);
+
+    var H = [0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a,
+             0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19];
+    var w = new Uint32Array(64);
+
+    for (var base = 0; base < paddedLen; base += 64) {
+      var i, t;
+      for (i = 0; i < 16; i++) w[i] = dv.getUint32(base + i * 4);
+      for (i = 16; i < 64; i++) {
+        var w15 = w[i - 15], w2 = w[i - 2];
+        var s0 = (w15 >>> 7) ^ (w15 >>> 18) ^ (w15 >>> 3);
+        var s1 = (w2 >>> 17) ^ (w2 >>> 19) ^ (w2 >>> 10);
+        w[i] = (w[i - 16] + s0 + w[i - 7] + s1) | 0;
+      }
+      var a = H[0], b = H[1], c = H[2], d = H[3], e = H[4], f = H[5], g = H[6], h = H[7];
+      for (t = 0; t < 64; t++) {
+        var S1 = rotr(e, 6) ^ rotr(e, 11) ^ rotr(e, 25);
+        var ch = (e & f) ^ ((~e) & g);
+        var temp1 = (h + S1 + ch + K256[t] + w[t]) | 0;
+        var S0 = rotr(a, 2) ^ rotr(a, 13) ^ rotr(a, 22);
+        var maj = (a & b) ^ (a & c) ^ (b & c);
+        var temp2 = (S0 + maj) | 0;
+        h = g; g = f; f = e; e = (d + temp1) | 0; d = c; c = b; b = a; a = (temp1 + temp2) | 0;
+      }
+      H[0] = (H[0] + a) | 0; H[1] = (H[1] + b) | 0; H[2] = (H[2] + c) | 0; H[3] = (H[3] + d) | 0;
+      H[4] = (H[4] + e) | 0; H[5] = (H[5] + f) | 0; H[6] = (H[6] + g) | 0; H[7] = (H[7] + h) | 0;
+    }
+    var out = new Uint8Array(32);
+    for (i = 0; i < 8; i++) {
+      out[i * 4] = (H[i] >>> 24) & 255;
+      out[i * 4 + 1] = (H[i] >>> 16) & 255;
+      out[i * 4 + 2] = (H[i] >>> 8) & 255;
+      out[i * 4 + 3] = H[i] & 255;
+    }
+    return out;
+  }
+
+  /* ---------------- HMAC-SHA256 ---------------- */
+
+  function hmacSha256(key, msg) {
+    var keyBytes = (key.length > 64) ? sha256(key) : key;
+    var ipad = new Uint8Array(64), opad = new Uint8Array(64);
+    for (var i = 0; i < 64; i++) {
+      var kk = (i < keyBytes.length) ? keyBytes[i] : 0;
+      ipad[i] = kk ^ 0x36;
+      opad[i] = kk ^ 0x5c;
+    }
+    var inner = new Uint8Array(64 + msg.length);
+    inner.set(ipad, 0);
+    inner.set(msg, 64);
+    var ih = sha256(inner);
+    var outer = new Uint8Array(64 + ih.length);
+    outer.set(opad, 0);
+    outer.set(ih, 64);
+    return sha256(outer);
+  }
+
+  /* ---------------- PBKDF2-HMAC-SHA256 ---------------- */
+
+  function pbkdf2(password, salt, iterations, dkLen) {
+    var out = new Uint8Array(dkLen);
+    var numBlocks = Math.ceil(dkLen / 32);
+    for (var block = 1; block <= numBlocks; block++) {
+      var blockMsg = new Uint8Array(salt.length + 4);
+      blockMsg.set(salt, 0);
+      blockMsg[salt.length] = (block >>> 24) & 255;
+      blockMsg[salt.length + 1] = (block >>> 16) & 255;
+      blockMsg[salt.length + 2] = (block >>> 8) & 255;
+      blockMsg[salt.length + 3] = block & 255;
+      var U = hmacSha256(password, blockMsg);
+      var T = new Uint8Array(U);
+      for (var r = 1; r < iterations; r++) {
+        U = hmacSha256(password, U);
+        for (var m = 0; m < 32; m++) T[m] ^= U[m];
+      }
+      var start = (block - 1) * 32;
+      for (var q = 0; q < 32 && (start + q) < dkLen; q++) out[start + q] = T[q];
+    }
+    return out;
+  }
+
+  /* ---------------- 密钥流(计数器模式 HMAC) ---------------- */
+
+  function stretch(key32, len) {
+    var out = new Uint8Array(len);
+    var cnt = new Uint8Array(4);
+    var counter = 0, pos = 0;
+    while (pos < len) {
+      cnt[0] = (counter >>> 24) & 255;
+      cnt[1] = (counter >>> 16) & 255;
+      cnt[2] = (counter >>> 8) & 255;
+      cnt[3] = counter & 255;
+      var h = hmacSha256(key32, cnt);
+      for (var j = 0; j < 32 && pos < len; j++) out[pos++] = h[j];
+      counter++;
+    }
+    return out;
+  }
+
+  /* ---------------- UTF-8 ---------------- */
+
+  function utf8Encode(str) {
+    var bytes = [];
+    for (var i = 0; i < str.length; i++) {
+      var code = str.charCodeAt(i);
+      if (code >= 0xD800 && code <= 0xDBFF && i + 1 < str.length) {
+        var lo = str.charCodeAt(i + 1);
+        if (lo >= 0xDC00 && lo <= 0xDFFF) {
+          code = 0x10000 + ((code - 0xD800) << 10) + (lo - 0xDC00);
+          i++;
+        }
+      }
+      if (code < 0x80) bytes.push(code);
+      else if (code < 0x800) bytes.push(0xC0 | (code >> 6), 0x80 | (code & 63));
+      else if (code < 0x10000) bytes.push(0xE0 | (code >> 12), 0x80 | ((code >> 6) & 63), 0x80 | (code & 63));
+      else bytes.push(0xF0 | (code >> 18), 0x80 | ((code >> 12) & 63), 0x80 | ((code >> 6) & 63), 0x80 | (code & 63));
+    }
+    return Uint8Array.from(bytes);
+  }
+
+  function utf8DecodeStrict(bytes) {
+    function fail() { throw new Error('BAD_UTF8'); }
+    var out = [];
+    var i = 0, n = bytes.length;
+    while (i < n) {
+      var b0 = bytes[i], cp, need;
+      if (b0 < 0x80) { out.push(b0); i++; continue; }
+      else if ((b0 & 0xE0) === 0xC0) { need = 1; cp = b0 & 0x1F; }
+      else if ((b0 & 0xF0) === 0xE0) { need = 2; cp = b0 & 0x0F; }
+      else if ((b0 & 0xF8) === 0xF0) { need = 3; cp = b0 & 0x07; }
+      else fail();
+      if (i + need >= n) fail();
+      for (var j = 1; j <= need; j++) {
+        var bn = bytes[i + j];
+        if ((bn & 0xC0) !== 0x80) fail();
+        cp = (cp << 6) | (bn & 0x3F);
+      }
+      if ((need === 1 && cp < 0x80) || (need === 2 && cp < 0x800) || (need === 3 && cp < 0x10000)) fail();
+      if (cp > 0x10FFFF || (cp >= 0xD800 && cp <= 0xDFFF)) fail();
+      i += need + 1;
+      if (cp <= 0xFFFF) out.push(cp);
+      else {
+        cp -= 0x10000;
+        out.push(0xD800 + ((cp >> 10) & 0x3FF), 0xDC00 + (cp & 0x3FF));
+      }
+    }
+    return String.fromCharCode.apply(null, out);
+  }
+
+  /* ---------------- hex / base64 ---------------- */
+
+  function bytesToHex(b) {
+    var s = '';
+    for (var i = 0; i < b.length; i++) {
+      var h = b[i].toString(16);
+      s += (h.length < 2) ? '0' + h : h;
+    }
+    return s;
+  }
+
+  function hexToBytes(hex) {
+    var out = new Uint8Array(hex.length / 2);
+    for (var i = 0; i < hex.length; i += 2) out[i / 2] = parseInt(hex.substr(i, 2), 16);
+    return out;
+  }
+
+  var B64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+
+  function bytesToBase64(bytes) {
+    var s = '';
+    for (var i = 0; i < bytes.length; i += 3) {
+      var b0 = bytes[i];
+      var b1 = (i + 1 < bytes.length) ? bytes[i + 1] : -1;
+      var b2 = (i + 2 < bytes.length) ? bytes[i + 2] : -1;
+      s += B64.charAt(b0 >> 2);
+      s += B64.charAt(((b0 & 3) << 4) | (b1 >= 0 ? (b1 >> 4) : 0));
+      s += (b1 >= 0) ? B64.charAt(((b1 & 15) << 2) | (b2 >= 0 ? (b2 >> 6) : 0)) : '=';
+      s += (b2 >= 0) ? B64.charAt(b2 & 63) : '=';
+    }
+    return s;
+  }
+
+  function base64ToBytes(s) {
+    var lut = {};
+    for (var i = 0; i < 64; i++) lut[B64.charAt(i)] = i;
+    var clean = s.replace(/[\r\n]/g, '');
+    var out = [];
+    var n = clean.length;
+    for (i = 0; i < n; i += 4) {
+      var c0 = lut[clean.charAt(i)], c1 = lut[clean.charAt(i + 1)];
+      if (c0 === undefined || c1 === undefined) throw new Error('BAD_B64');
+      var has2 = (i + 2 < n) && clean.charAt(i + 2) !== '=';
+      var has3 = (i + 3 < n) && clean.charAt(i + 3) !== '=';
+      var c2 = has2 ? lut[clean.charAt(i + 2)] : 0;
+      var c3 = has3 ? lut[clean.charAt(i + 3)] : 0;
+      out.push((c0 << 2) | (c1 >> 4));
+      if (has2) out.push(((c1 & 15) << 4) | (c2 >> 2));
+      if (has3) out.push(((c2 & 3) << 6) | c3);
+    }
+    return Uint8Array.from(out);
+  }
+
+  /* ---------------- 加密 / 解密 ---------------- */
+
+  function deriveKey(password, saltHex, iterations) {
+    return pbkdf2(utf8Encode(password), hexToBytes(saltHex), iterations, KEY_LEN);
+  }
+
+  function encrypt(plainText, password, saltHex, iterations) {
+    var data = utf8Encode(MARKER + plainText);
+    var key = deriveKey(password, saltHex, iterations);
+    var ks = stretch(key, data.length);
+    var cipher = new Uint8Array(data.length);
+    for (var i = 0; i < data.length; i++) cipher[i] = data[i] ^ ks[i];
+    return bytesToBase64(cipher);
+  }
+
+  function decrypt(cipherB64, password, saltHex, iterations) {
+    var cipher = base64ToBytes(cipherB64);
+    var key = deriveKey(password, saltHex, iterations);
+    var ks = stretch(key, cipher.length);
+    var data = new Uint8Array(cipher.length);
+    for (var i = 0; i < cipher.length; i++) data[i] = cipher[i] ^ ks[i];
+    var text = utf8DecodeStrict(data);
+    if (text.slice(0, MARKER.length) !== MARKER) throw new Error('BAD_PASSWORD');
+    return text.slice(MARKER.length);
+  }
+
+  /* ---------------- 导出 ---------------- */
+
+  var api = {
+    MARKER: MARKER,
+    DEFAULT_ITER: DEFAULT_ITER,
+    utf8Encode: utf8Encode,
+    utf8DecodeStrict: utf8DecodeStrict,
+    bytesToHex: bytesToHex,
+    hexToBytes: hexToBytes,
+    bytesToBase64: bytesToBase64,
+    base64ToBytes: base64ToBytes,
+    sha256: sha256,
+    hmacSha256: hmacSha256,
+    pbkdf2: pbkdf2,
+    stretch: stretch,
+    deriveKey: deriveKey,
+    encrypt: encrypt,
+    decrypt: decrypt
+  };
+
+  if (typeof module !== 'undefined' && module.exports) module.exports = api;
+  else root.GditCrypto = api;
+})(typeof self !== 'undefined' ? self : this);
+
+
     (function () {
 
-      // 加密数据（由 build.js 注入，base64 密文）
-      var payload = {"v":1,"iter":20000,"salt":"939507c1fd844cb6d71c37fec5f27d2f","c":"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"};
+      // 加密数据（由 build.js 注入）
+      var payload = {"v":1,"iter":20000,"salt":"797f1db95fa92be291dcece5a57dddc7","c":"G0cOGN3oykpS7KqyWgxsfrLzogEnks6sHMTxCdC13d1I3WVz4uevZgN6lE53Wem9PLfaC2peyB6D+muFJCRqb0/EmU5EGoZKOIWx2S50JyML7MoEClV1I381v2bhFpVKtJ61BiYPFeyVjhsNTuP3H7FRuVjdIwiha8im2jdUFWaBme52ZCLY5suevnyuBZk1KM7QlZDZ9cImsHt8azUtRFvNVixU+SG7XAiqob0+IrIghYpsExpIpUxzEOJFTTnQXqwF2tov8raZAXnaXQHi3U6U0ANYRjW92CfaJ2yYG++NuaYA1w4S6HnKwF4S46P8Md7hwMXR6pQsH6wiFUGrJ1/IL5Jpr7iTcMWcpupIdhuSpSb0TWXpZxTwnmXN/rmmQmyJMTYEVAK+zeSTednJOCzB6AdEKDRJMB6dTra+TQHYm0v7qkf0KxbRo76TqQVCrURwymuGlR5I+pxn8HwTOlPC0Of3XCYZGY6WjC9tJJerQ8g/nlQB4B7wnAuzZox2VdsRipSsizpCOE5q5jIhFvSswcfLpsEDRDu04ZXoLO8OIcQaH3grmyxxRYt09JLH4OUKBMBx2pkdyTPjc7wpTLaJdN61kIqedsGbILZyBYN+lFguVDtiOha7aUYgDi3f1gv+Ss69CztU7yVgjWIwrA86F4aWHX54CsTBP9PhCSCOVQzuoN5EMWZgKoidHMFO25yKA57+NZn+uMbcEAPC5QtNumRQHVYsI2GKo/TPmGax5DXXUPh0y2vigbEe7+2uExgDJSCQLtJLXO8t55OP9QoV9cCvhwqYq6hviB5XM8i63VMXl16he+qDGaDcjTGf3tLAMKeXnSaBwMSDzycv6NZ+2+WmswWIMX0MGZkAnTZTurzf1kYmBsl0jmiRvO5kMxfeDERT9F3ywY8oxrUPwKhOGMpi5ljSBayzhrYoGPFTAABNiH85Cmw5arUAEse7c/RvF56TWik7PLrG9mpZVNCtq02cSLhM6dbjVvFUHVBN0lf7XWJsaQoW4EVgzinEoWjj8MEjpeY+WEItdjwqiV0lcUd0K3WRRwsFHpugJQ5DmGkKAsr8kHSziIKbFYAlW2yn81U143dNmF6wBwjwmdXzFmuSXxq1fGslpLidBkuuyDgF1ldLL8PBoQn4RROGiMbomT3mUmyhbdWFFFZlRjM4cvfAgkX/a/RDtOyLHk3/TUX1xsrl6gaIoaGgA3f5rlx7ebLCvoQBLSKnULuyGiCTdTOdvoTnWr1F3iGg8JCciEkIIoEc0yMi7xVXf/PnHkZ0Xrg7SwY5RaAfLMp+ocjaQMbLMnzmIFrQ3k1pbwZxQHT93yZat1HsRrUK19AXw7JwijjvhygKqTVoz8C5XkdflUrXZ9RmSRGwyzuDTl2QbFaYa4I8ZJxyC1pQicSM3oOxMpdGiBc1HxFwqtTJUNYuyl5b7/82rNw9t2sCWroWrEE0JxmY4QTjU/RZzhBdtVpOwP+pIpUQSQRkI0baOdweZEFI9UhV9Xxh7d+og/l9oKFASI7lwfDpmVIialjGUzMtZJQNP6a9D/nzQETe9ugs9jzk+nEHCjMv03rwhu/pNRmScZYrShoOV8X/V4LYCDFShTY1Wa6uk2xUkAU5VGR9ZoA/2QCbrFIQaSbfC/Zqyb0nOBLzBPqmUvKAwIjpCdn0GRpqnhlAkb3XCLv2oIrCAdjLybyC1RH3W1uj/B9fR3gsZPU1pK45fhKYVqNNpCvFHyAg9ZlMqH/sQBaYJMBBdOtCzyv+UYB0RorojzaDQkOUfucxPL6W1/QqrlUWLUEA/gD03Dwam/jrtmpVFqg+vAYRwYi7a+DRdq+GE64ZKOf1Yu0kuAFRpMAHDLgGJN+ayoHGTyAQxtnUrIHWkklbQY77f7i4933rZjcGtogq1Z2zKY8DYm/GKa+ncek3GK/YFGqlhqHbbaLLNHu3ztBfp+oxe7xRLZ6GtWWb6JwlZs6XLrmZO7qfCi9OcSgFHdWeoaR8H/A3X92OBctjWKXjz9yfS7z38MdFPqgp6KGA589P4dFbsy0LxB4cq2JhJFNErxYMPx4gltkfYKlT+yIoSnaNnuUxFz2XeyGdToZk3TZBn9p/aqYfdysJCdge4XZkTBa/CcZsdQQWDlGCW/2hwOnOhfp/2S6qZKm4a1qMYt58HOY67UTm/bvLg1qTjSsIhRE/aKqGk9xvkZxh1KH1kDDOPQOBx1FDEl45pp9FvjEWqd/OsVWVJ+uXkSpAAI0Lz9bLXmptihMCXI0jzz4oPLqjHNdVTP/sNKlWQT+7MPc7wvok8ABqAPRn8L+OUUgJwUJC/MiJeSvLXgDHd6gs/JduELSxam4z1CQWqNaPj6rd+7GzJT251EG58phecRYFW/41Zrgua2HX1zJcN70N8JP3A7w20jOeXkQK7GFXkT43Z+n4By9GLT3424JscK/2ljUmW5+EAuMcWy9AQ8kPaH9+tYrxNQ28mpVg+NC+hdLui6pFPnaAkdHh1stodOG/p39rN+Sex6sUHci/xvdZI/pIC3X6E+nlNjLdA8ZpucfZNRSvJXC7etPxVgE0EfWp8BngTG5EdHvLvNpr637kxo5934fXwDzFFOpQCUJ14lTw6JtiN+Cxgk7Ofoo6tLJYoxOMDfMJqdrOTfZd740TeZt7d4Dm+WCFA0eM4XNAMow1bh24UcLT8W3axjUd+bhGSBB5DGXyREHSho3sy1g32XvdfZdHSvfJtNde5evHYakEHiQ75nt/wUEqu5rXBVElIiOTEX0TRywsYrg5vRpRHjaZTCRok20qjAcxeenPGDzgM5PKdV2rhXzStIeRRg=="};
 
       var lockCard = document.getElementById('lockCard');
-      var host = document.getElementById('resumeHost');
+      var profileCard = document.getElementById('profileCard');
       var form = document.getElementById('loginForm');
       var input = document.getElementById('pwInput');
       var btn = document.getElementById('enterBtn');
       var msgLine = document.getElementById('msgLine');
-
       var busy = false;
 
-      function showResume(html) {
-        host.innerHTML = html;
-        host.hidden = false;
-        host.classList.add("reveal");
-        document.body.classList.remove("locked");
-        lockCard.style.display = "none";
-        document.title = "个人简历";
+      /* ===== 站点级公共逻辑（由 build.js 注入，两页共用）===== */
+      var SESSION_KEY = 'gdit_unlock_v1';
+
+      function readSession() {
+        try { return sessionStorage.getItem(SESSION_KEY) || ""; } catch (e) { return ""; }
+      }
+      function saveSession(pw) {
+        try { sessionStorage.setItem(SESSION_KEY, pw); } catch (e) { /* 隐私模式静默忽略 */ }
+      }
+      function clearSession() {
+        try { sessionStorage.removeItem(SESSION_KEY); } catch (e) { /* 忽略 */ }
+      }
+
+      /** 从地址栏取 ?pw= / #pw=，并立刻把密码从地址栏抹掉 */
+      function takePwFromUrl() {
+        var raw = (location.search || "") + (location.hash || "");
+        var m = raw.match(/[?&#]pw=([^&#]+)/i);
+        if (!m) return "";
+        var pw = "";
+        try { pw = decodeURIComponent(m[1]); } catch (e) { pw = ""; }
+        try {
+          var clean = new URL(location.href);
+          clean.searchParams.delete("pw");
+          if (/^pw=/i.test(clean.hash.slice(1))) clean.hash = '';
+          history.replaceState(null, "", clean.toString());
+        } catch (e) { /* 忽略 */ }
+        return pw;
+      }
+
+      /** 解锁成功后打开右下角浮动操作组（跳另一页 + 锁定）*/
+      function showActions() {
+        var box = document.getElementById("pageActions");
+        if (box) box.hidden = false;
+      }
+
+      /** 锁定：清掉会话密码，回到锁屏（公共电脑临时离开时用）*/
+      function lockNow() {
+        clearSession();
+        location.reload();
+      }
+
+
+      function render(plain) {
+        profileCard.innerHTML = plain;
+        profileCard.classList.remove('reveal');
+        void profileCard.offsetWidth;
+        profileCard.classList.add('reveal');
+        lockCard.style.display = 'none';
+        profileCard.hidden = false;
+        document.title = '个人简介';
+        showActions();
         window.scrollTo(0, 0);
-
-        // 右下角浮动操作组：个人简介入口 + 锁定
-        var actions = document.createElement('div');
-        actions.className = "page-actions";
-
-        // 入口：跳到 intro.html 看个人简介（同一密码，那边需再输一次）
-        var btnIntro = document.createElement('a');
-        btnIntro.className = "action-btn action-intro";
-        btnIntro.href = "intro.html";
-        btnIntro.textContent = "个人简介";
-        btnIntro.title = "查看个人简介";
-        actions.appendChild(btnIntro);
-
-        // 锁定：一键回到锁屏（公共电脑上临时离开时用）
-        var btnLock = document.createElement('button');
-        btnLock.className = "action-btn action-lock";
-        btnLock.type = "button";
-        btnLock.textContent = "锁定";
-        btnLock.title = "重新隐藏简历内容";
-        btnLock.addEventListener("click", function () { location.reload(); });
-        actions.appendChild(btnLock);
-
-        document.body.appendChild(actions);
       }
 
-      function unlock(password) {
-        busy = true;
-        btn.disabled = true;
-        msgLine.textContent = "";
-        // 让出一帧，先刷新按钮禁用态
-        setTimeout(function () {
-          var data;
-          try {
-            var plain = GditCrypto.decrypt(payload.c, password, payload.salt, payload.iter);
-            data = JSON.parse(plain);
-          } catch (e) {
-            busy = false;
-            btn.disabled = false;
-            input.value = "";
-            input.focus();
-            lockCard.classList.remove("shake");
-            void lockCard.offsetWidth; // 重新触发抖动动画
-            lockCard.classList.add("shake");
-            msgLine.textContent = "密码错误，请重试";
-            return;
-          }
-          showResume(data.html);
-        }, 30);
+      function shake() {
+        lockCard.classList.remove('shake');
+        void lockCard.offsetWidth; // 重新触发动画
+        lockCard.classList.add('shake');
       }
 
-      form.addEventListener("submit", function (e) {
+      /** 尝试解密并渲染。silent=true 时不提示错误（用于自动解锁）。返回是否成功。 */
+      function attempt(pw, silent) {
+        var plain;
+        try {
+          plain = GditCrypto.decrypt(payload.c, pw, payload.salt, payload.iter);
+        } catch (e) { plain = null; }
+        if (plain === null) {
+          if (!silent) { shake(); msgLine.textContent = '密码错误，请重试'; }
+          return false;
+        }
+        var data;
+        try { data = JSON.parse(plain); } catch (e) { data = null; }
+        if (!data || typeof data.html !== 'string') {
+          if (!silent) { shake(); msgLine.textContent = '内容损坏，无法解密'; }
+          return false;
+        }
+        saveSession(pw);
+        render(data.html);
+        return true;
+      }
+
+      form.addEventListener('submit', function (e) {
         e.preventDefault();
         if (busy) return;
         var pw = input.value;
         if (!pw) { input.focus(); return; }
-        unlock(pw);
+        busy = true;
+        btn.disabled = true;
+        msgLine.textContent = '';
+        // 让出一帧，先刷新按钮禁用态
+        setTimeout(function () {
+          attempt(pw, false);
+          busy = false;
+          btn.disabled = false;
+          if (lockCard.style.display !== 'none' && input.value) {
+            input.value = ''; input.focus();
+          }
+        }, 30);
       });
 
-      input.addEventListener("keydown", function (e) {
-        if (e.key === "Escape") { input.value = ""; }
+      input.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') { input.value = ''; }
       });
 
-      // ===== 从 URL 提取密码并自动填入（仍需手动点「解锁」）=====
-      // 用法：网址末尾加 ?pw=密码 或 #pw=密码
-      var raw = (location.search || "") + (location.hash || "");
-      var m = raw.match(/[?&#]pw=([^&#]+)/i);
-      var token = null;
-      if (m) { try { token = decodeURIComponent(m[1]); } catch (e) { token = null; } }
-      if (token && token.length) {
-        input.value = token;
-        // 用完立刻从地址栏抹掉，避免密码残留在屏幕或历史记录里
-        try {
-          var clean = new URL(location.href);
-          clean.searchParams.delete("pw");
-          if (/^pw=/i.test(clean.hash.slice(1))) clean.hash = "";
-          history.replaceState(null, "", clean.toString());
-        } catch (e) { /* 忽略 */ }
-        input.style.borderColor = "#667eea";
-        input.style.boxShadow = "0 0 0 3px rgba(102,126,234,0.25)";
+      // ===== 1) 会话内已解锁过：直接进正文，不再弹锁屏 =====
+      var saved = readSession();
+      if (saved && attempt(saved, true)) {
+        // 已在正文页，收工
+      } else if (saved) {
+        clearSession(); // 存的是旧密码（比如重新 build 换了密码），丢掉
+      }
+
+      // ===== 2) 地址栏 ?pw= / #pw=：填进输入框，等用户点解锁 =====
+      var fromUrl = takePwFromUrl();
+      if (fromUrl) {
+        input.value = fromUrl;
+        input.style.borderColor = '#667eea';
+        input.style.boxShadow = '0 0 0 3px rgba(102,126,234,0.25)';
         input.focus();
         input.select();
       } else {
         input.focus();
       }
 
-      input.addEventListener("input", function () {
-        if (input.style.borderColor === "#667eea") {
-          input.style.borderColor = "";
-          input.style.boxShadow = "";
+      input.addEventListener('input', function () {
+        if (input.style.borderColor === '#667eea') {
+          input.style.borderColor = '';
+          input.style.boxShadow = '';
         }
       });
+
+      var lockBtn = document.getElementById('lockBtn');
+      if (lockBtn) lockBtn.addEventListener('click', lockNow);
     })();
   </script>
 </body>
