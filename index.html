@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="个人简历">
+  <meta name="robots" content="noindex, nofollow">
+  <title>个人简历</title>
+  <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg">
+  <!-- 简历样式：静态文件（只含排版，不含任何个人资料） -->
+  <link rel="stylesheet" href="assets/css/resume.css">
+  <style>
+    /* ===== 锁屏样式：放在 resume.css 之后，用于覆盖它的全局底色 ===== */
+    /* 背景直接用 default.png：不再叠紫色蒙版、不做模糊，原图什么样就什么样。
+       前面的 #1b1b23 只是图片没加载出来时的兜底底色。 */
+    body.locked {
+      display: flex; align-items: center; justify-content: center;
+      min-height: 100vh; padding: 20px;
+      background: #1b1b23 url('assets/img/default.png') center center / cover no-repeat fixed;
+    }
+    .card {
+      width: 100%; max-width: 560px; background: #fff;
+      border-radius: 20px; padding: 40px;
+      box-shadow: 0 20px 60px rgba(0,0,0,.25);
+    }
+    .lock-card { max-width: 400px; text-align: center; }
+    .lock-ico {
+      width: 84px; height: 84px; margin: 0 auto 18px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      box-shadow: 0 8px 20px rgba(102,126,234,.4);
+    }
+    .lock-title { margin: 0; font-size: 24px; font-weight: 700; color: #333; }
+    .lock-sub { color: #8892b0; font-size: 13px; line-height: 1.7; margin: 8px 0 22px; }
+    .lock-form input {
+      width: 100%; padding: 13px 16px; font-size: 16px;
+      border: 1.5px solid #dfe3f0; border-radius: 12px; outline: none; color: #333;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    .lock-form input:focus { border-color: #667eea; box-shadow: 0 0 0 3px rgba(102,126,234,.18); }
+    .lock-form button {
+      width: 100%; margin-top: 12px; padding: 13px 16px; font-size: 16px; font-weight: bold;
+      color: #fff; letter-spacing: 6px;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      border: none; border-radius: 12px; cursor: pointer;
+      transition: transform .1s, box-shadow .2s, opacity .2s;
+    }
+    .lock-form button:hover { box-shadow: 0 8px 20px rgba(102,126,234,.4); }
+    .lock-form button:active { transform: translateY(1px); }
+    .lock-form button:disabled { opacity: .6; cursor: wait; }
+    .lock-msg { min-height: 22px; margin: 14px 0 0; font-size: 13px; color: #e2574c; }
+    .lock-foot { margin: 4px 0 0; font-size: 12px; color: #c0c5d4; }
+    @keyframes shake {
+      10%, 90% { transform: translateX(-2px); }
+      20%, 80% { transform: translateX(3px); }
+      30%, 50%, 70% { transform: translateX(-5px); }
+      40%, 60% { transform: translateX(5px); }
+    }
+    .shake { animation: shake .45s ease; }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+    .reveal { animation: fadeUp .5s ease; }
+    /* ===== 解锁后的浮动操作组：个人简介入口 + 锁定 ===== */
+    .page-actions {
+      position: fixed; right: 18px; bottom: 18px; z-index: 99;
+      display: flex; gap: 10px; align-items: center;
+    }
+    .action-btn {
+      padding: 9px 18px; font-size: 13px; font-family: inherit; line-height: 1.4;
+      border: none; border-radius: 999px; cursor: pointer; text-decoration: none;
+      box-shadow: 0 4px 14px rgba(0,0,0,.2);
+      transition: transform .1s, box-shadow .2s, background .2s;
+    }
+    .action-btn:hover { transform: translateY(-1px); }
+    .action-btn:active { transform: translateY(0); }
+    /* 个人简介入口：做成醒目的品牌色胶囊，一解锁就能看见 */
+    .action-intro {
+      color: #fff; font-weight: bold;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+    }
+    .action-intro:hover { box-shadow: 0 8px 20px rgba(102,126,234,.5); }
+    .action-intro::after { content: " →"; }
+    .action-lock { color: #fff; background: rgba(31,94,168,.85); }
+    .action-lock:hover { background: rgba(31,94,168,1); }
+    @media print { .page-actions { display: none; } }
+  </style>
+</head>
+<body class="locked">
+
+  <!-- 锁屏 -->
+  <div class="card lock-card" id="lockCard">
+    <div class="lock-ico" aria-hidden="true">
+      <svg viewBox="0 0 24 24" width="38" height="38" fill="none"
+           stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="4" y="11" width="16" height="10" rx="2"/>
+        <path d="M8 11V7a4 4 0 0 1 8 0v4"/>
+      </svg>
+    </div>
+    <h1 class="lock-title">个人简历</h1>
+    <p class="lock-sub">本页简历已加密保存，<br>请输入访问密码进行解密查看。</p>
+
+    <form id="loginForm" class="lock-form" novalidate autocomplete="off">
+      <input id="pwInput" type="password" placeholder="请输入访问密码"
+             autocomplete="off" spellcheck="false" autocapitalize="off" />
+      <button id="enterBtn" type="submit">解 锁</button>
+    </form>
+    <p class="lock-msg" id="msgLine"></p>
+    <p class="lock-foot">忘记密码请联系作者</p>
+  </div>
+
+  <noscript>
+    <div class="card"><p>本页需要启用 JavaScript 才能解密显示。</p></div>
+  </noscript>
+
+  <!-- 解密后的简历正文（初始为空，解密成功后填充） -->
+  <main id="resumeHost" hidden></main>
+
+  <script src="assets/js/gdit-crypto.js"></script>
+  <script>
+    (function () {
+
+      // 加密数据（由 build.js 注入，base64 密文）
+      var payload = {"v":1,"iter":20000,"salt":"939507c1fd844cb6d71c37fec5f27d2f","c":"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"};
+
+      var lockCard = document.getElementById('lockCard');
+      var host = document.getElementById('resumeHost');
+      var form = document.getElementById('loginForm');
+      var input = document.getElementById('pwInput');
+      var btn = document.getElementById('enterBtn');
+      var msgLine = document.getElementById('msgLine');
+
+      var busy = false;
+
+      function showResume(html) {
+        host.innerHTML = html;
+        host.hidden = false;
+        host.classList.add("reveal");
+        document.body.classList.remove("locked");
+        lockCard.style.display = "none";
+        document.title = "个人简历";
+        window.scrollTo(0, 0);
+
+        // 右下角浮动操作组：个人简介入口 + 锁定
+        var actions = document.createElement('div');
+        actions.className = "page-actions";
+
+        // 入口：跳到 intro.html 看个人简介（同一密码，那边需再输一次）
+        var btnIntro = document.createElement('a');
+        btnIntro.className = "action-btn action-intro";
+        btnIntro.href = "intro.html";
+        btnIntro.textContent = "个人简介";
+        btnIntro.title = "查看个人简介";
+        actions.appendChild(btnIntro);
+
+        // 锁定：一键回到锁屏（公共电脑上临时离开时用）
+        var btnLock = document.createElement('button');
+        btnLock.className = "action-btn action-lock";
+        btnLock.type = "button";
+        btnLock.textContent = "锁定";
+        btnLock.title = "重新隐藏简历内容";
+        btnLock.addEventListener("click", function () { location.reload(); });
+        actions.appendChild(btnLock);
+
+        document.body.appendChild(actions);
+      }
+
+      function unlock(password) {
+        busy = true;
+        btn.disabled = true;
+        msgLine.textContent = "";
+        // 让出一帧，先刷新按钮禁用态
+        setTimeout(function () {
+          var data;
+          try {
+            var plain = GditCrypto.decrypt(payload.c, password, payload.salt, payload.iter);
+            data = JSON.parse(plain);
+          } catch (e) {
+            busy = false;
+            btn.disabled = false;
+            input.value = "";
+            input.focus();
+            lockCard.classList.remove("shake");
+            void lockCard.offsetWidth; // 重新触发抖动动画
+            lockCard.classList.add("shake");
+            msgLine.textContent = "密码错误，请重试";
+            return;
+          }
+          showResume(data.html);
+        }, 30);
+      }
+
+      form.addEventListener("submit", function (e) {
+        e.preventDefault();
+        if (busy) return;
+        var pw = input.value;
+        if (!pw) { input.focus(); return; }
+        unlock(pw);
+      });
+
+      input.addEventListener("keydown", function (e) {
+        if (e.key === "Escape") { input.value = ""; }
+      });
+
+      // ===== 从 URL 提取密码并自动填入（仍需手动点「解锁」）=====
+      // 用法：网址末尾加 ?pw=密码 或 #pw=密码
+      var raw = (location.search || "") + (location.hash || "");
+      var m = raw.match(/[?&#]pw=([^&#]+)/i);
+      var token = null;
+      if (m) { try { token = decodeURIComponent(m[1]); } catch (e) { token = null; } }
+      if (token && token.length) {
+        input.value = token;
+        // 用完立刻从地址栏抹掉，避免密码残留在屏幕或历史记录里
+        try {
+          var clean = new URL(location.href);
+          clean.searchParams.delete("pw");
+          if (/^pw=/i.test(clean.hash.slice(1))) clean.hash = "";
+          history.replaceState(null, "", clean.toString());
+        } catch (e) { /* 忽略 */ }
+        input.style.borderColor = "#667eea";
+        input.style.boxShadow = "0 0 0 3px rgba(102,126,234,0.25)";
+        input.focus();
+        input.select();
+      } else {
+        input.focus();
+      }
+
+      input.addEventListener("input", function () {
+        if (input.style.borderColor === "#667eea") {
+          input.style.borderColor = "";
+          input.style.boxShadow = "";
+        }
+      });
+    })();
+  </script>
+</body>
+</html>
