@@ -688,6 +688,22 @@ a.tag:active { transform: translateY(0); }
   background: var(--brand-light);
 }
 
+/* ---- 名片式清单：标签 + 内容（城市名片 / 学校信息用） ---- */
+.city-facts {
+  margin: 4px 0 0;
+  padding-left: 20px;
+}
+
+.city-facts li {
+  margin: 6px 0;
+  font-size: 13.5px;
+  line-height: 1.75;
+}
+
+.city-facts b {
+  color: var(--brand-dark);
+}
+
 /* ---- 课程列表 ---- */
 .course-list {
   margin: 4px 0 0;
