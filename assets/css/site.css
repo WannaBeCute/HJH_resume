@@ -701,6 +701,108 @@ a.tag:active { transform: translateY(0); }
 }
 
 /* ===========================================================================
+   7d. 项目卡片 + 截图展位（比赛项目介绍用）
+   =========================================================================== */
+
+.project-card {
+  text-align: center;
+  padding: 28px 30px;
+}
+
+.project-tag {
+  display: inline-block;
+  margin-bottom: 14px;
+  padding: 4px 14px;
+  font-size: 12px;
+  letter-spacing: 1px;
+  color: var(--brand);
+  background: var(--brand-light);
+  border-radius: var(--radius-pill);
+}
+
+.project-name {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: 26px;
+  font-weight: 600;
+  letter-spacing: 3px;
+}
+
+.project-name span {
+  display: block;
+  margin-top: 6px;
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 400;
+  letter-spacing: 1px;
+  color: var(--muted);
+}
+
+.project-role {
+  margin: 14px 0 0;
+  font-size: 13.5px;
+  color: var(--muted);
+}
+
+/* ---- 关键指标：一横排数字 ---- */
+.stat-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.stat-row li {
+  flex: 1 1 140px;
+  padding: 14px 16px;
+  text-align: center;
+  background: var(--brand-light);
+  border-radius: var(--radius-md);
+}
+
+.stat-row b {
+  display: block;
+  font-size: 17px;
+  color: var(--brand-dark);
+}
+
+.stat-row span {
+  font-size: 12.5px;
+  color: var(--muted);
+}
+
+/* ---- 截图展位：两列自适应 ---- */
+.shot-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.shot {
+  margin: 0;
+}
+
+.shot img {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: #fff;
+}
+
+.shot figcaption {
+  margin-top: 9px;
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+
+.shot figcaption b {
+  color: var(--text);
+}
+
+/* ===========================================================================
    8. 首页：封面 + 目录
    =========================================================================== */
 
