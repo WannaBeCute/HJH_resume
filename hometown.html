@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="我的家乡：江西鄱阳，鄱阳湖东岸的千年古县、中国湖城。">
+  <meta name="description" content="个人简历网站的家乡页面。">
   <title>我的家乡 · 个人简历站</title>
 
   <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg">
@@ -66,8 +66,8 @@
   </header>
 
   <main class="site-main">
-      <!-- ===== 锁屏门禁：正文是密文，解锁后才由脚本渲染出来 ===== -->
-      <div class="gate" id="gate">
+      <!-- ===== 锁屏门禁：默认 hidden，脚本确认需要密码时才显示 ===== -->
+      <div class="gate" id="gate" hidden>
         <div class="gate-inner">
           <div class="gate-ico" aria-hidden="true">
             <svg viewBox="0 0 24 24" width="36" height="36" fill="none"
@@ -109,9 +109,7 @@
       </nav>
 
       <p class="footer-meta">
-        <span>个人简历站 · © <span id="footerYear">2026</span></span>
-        <span aria-hidden="true"> · </span>
-        <a href="intro.html">联系方式见「个人简历」页</a>
+        <span>© <span id="footerYear">2026</span> 个人简历站</span>
       </p>
     </div>
   </footer>
@@ -249,29 +247,44 @@
         if (e.key === "Escape") { input.value = ""; }
       });
 
-      /* ---- 1) 本次会话已解锁过：直接进正文，不再弹锁屏 ---- */
-      var saved = readSession();
-      if (saved) {
-        setBusy(true);
-        var ok = attempt(saved, true);
-        setBusy(false);
-        if (!ok) clearSession(); // 存的是旧密码（比如重新 build 换了密码），丢掉重来
+      /* ================================================================
+         解锁流程（锁屏默认 hidden，只在确实需要密码时才显示）
+         1) 会话里有密码 -> 静默解密；成功就直接进正文，全程不出现锁屏
+         2) 静默解密失败（比如重新 build 换了密码）-> 丢掉旧密码，显示锁屏
+         3) 地址栏带 ?pw= / #pw= -> 显示锁屏并预填，等用户点解锁
+         4) 什么都没有 -> 显示锁屏
+         ================================================================ */
+
+      function openGate() {
+        gate.hidden = false;
       }
 
-      /* ---- 2) 地址栏 ?pw= / #pw=：填进输入框，等用户点解锁 ---- */
-      if (!gate.hidden) {
+      /* ---- 1) 本次会话已解锁过：直接进正文，不再弹锁屏 ---- */
+      var saved = readSession();
+      var unlocked = false;
+      if (saved) {
+        setBusy(true);
+        unlocked = attempt(saved, true);
+        setBusy(false);
+        if (!unlocked) clearSession(); // 旧密码（比如重新 build 换了密码），丢掉重来
+      }
+
+      /* ---- 2) 还没解锁：这时候才需要锁屏 ---- */
+      if (!unlocked) {
+        // 先把 ?pw= / #pw= 取出来并清掉地址栏，再显示锁屏，避免闪一下空输入框
         var fromUrl = takePwFromUrl();
+        openGate();
         if (fromUrl) {
           input.value = fromUrl;
-          input.style.borderColor = "#8fb6ec";
-          input.style.boxShadow = "0 0 0 3px rgba(143,182,236,0.25)";
+          input.style.borderColor = "#a8c8f5";
+          input.style.boxShadow = "0 0 0 3px rgba(168,200,245,0.25)";
           input.focus();
           input.select();
         } else {
           input.focus();
         }
         input.addEventListener("input", function () {
-          if (input.style.borderColor === "rgb(143, 182, 236)") {
+          if (input.style.borderColor === "rgb(168, 200, 245)") {
             input.style.borderColor = "";
             input.style.boxShadow = "";
           }

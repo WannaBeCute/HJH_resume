@@ -67,6 +67,15 @@
   --card-muted: #55596b;
   --card-border: #e3e6ee;
 
+  /* 简历模板自己的令牌（映射见 build.js 的 buildResumeCss）。
+     --ink-bg 只被 resume.css 的 `html, body { background: var(--ink-bg) }` 引用，
+     而 site.css 的 body 规则优先级更高，所以它实际不生效 —— 留在这里只是
+     为了让聚合后的 resume.css 里没有未定义的变量。 */
+  --ink: var(--card-text);
+  --ink-muted: var(--card-muted);
+  --ink-label: var(--card-text);
+  --ink-bg: #f2f2f2;
+
   /* ---- 门禁（锁屏）卡片：深色主题下也跟随外壳，浅色主题见下 ---- */
   --gate-text: var(--shell-text);
   --gate-muted: var(--shell-muted);
@@ -94,6 +103,32 @@
   --card-text: #23262e;
   --card-muted: #55596b;
   --card-border: #e3e6ee;
+}
+
+/* ---- 深色外观：卡片 / 简历纸也转成深色 ----
+   ---------------------------------------------------------------------------
+   原来自始至终没人定义 :root[data-theme="dark"]，所以「深色主题」只改了外壳，
+   而 --card-surface 一直是白 —— 深色主题下会看到一大块白纸，很刺眼。
+   下面把卡片、简历纸、简历顶部装饰条、头像描边一并转成深色。
+   （注意：--ink-* 是简历模板自己的令牌，映射见 build.js 的 buildResumeCss；）
+   （--ink-bg 只落给 body，而 site.css 的 body 规则优先级更高，用不到它。） */
+:root[data-theme="dark"] {
+  --card-surface: #1d1f2b;
+  --card-text: #e9edf8;
+  --card-muted: #b4bcd2;
+  --card-border: #343a4d;
+
+  --ink: var(--card-text);
+  --ink-muted: var(--card-muted);
+  --ink-label: var(--card-text);
+
+  --resume-head-bg: #262937;    /* 简历顶部座右铭条 */
+  --stripe-white: #1d1f2b;      /* 斜条纹里的「白」格，深色下换成纸色 */
+}
+
+:root[data-theme="light"] {
+  --resume-head-bg: #f5f5f5;
+  --stripe-white: #ffffff;
 }
 
 /* ===========================================================================
@@ -655,9 +690,19 @@ a.tag:active { transform: translateY(0); }
 .resume-head {
   position: relative;
   padding: 22px 30px;
-  background: #f5f5f5;
+  background: var(--resume-head-bg);
   border-bottom: 2px solid var(--brand);
   overflow: hidden;
+}
+
+/* 深色主题下座右铭用亮蓝，否则 #164a87 在深底上几乎看不见 */
+:root[data-theme="dark"] .motto {
+  color: var(--shell-accent);
+}
+
+/* 深色主题下头像描边跟随卡片描边色 */
+:root[data-theme="dark"] .info-grid .avatar img {
+  border-color: var(--card-border);
 }
 
 .motto {
@@ -668,7 +713,8 @@ a.tag:active { transform: translateY(0); }
   letter-spacing: .5px;
 }
 
-/* 纯 CSS 渐变条纹，无图片依赖 */
+/* 纯 CSS 渐变条纹，无图片依赖。
+   ⚠️ 深色主题下原本的 #ffffff 白格会刺眼，改用 --stripe-white 跟随主题。 */
 .diagonal-stripes {
   position: absolute;
   top: 0;
@@ -679,8 +725,8 @@ a.tag:active { transform: translateY(0); }
     -45deg,
     var(--brand) 0,
     var(--brand) 14px,
-    #ffffff 14px,
-    #ffffff 28px
+    var(--stripe-white) 14px,
+    var(--stripe-white) 28px
   );
   opacity: .85;
 }

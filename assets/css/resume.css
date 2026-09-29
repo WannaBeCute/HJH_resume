@@ -16,25 +16,13 @@
 }
 /* ===== 简历模板 · 蓝色商务风 ===== */
 
-:root {
-  --brand: #1f5ea8;           /* 深蓝主色：标题块、装饰条纹 */
-  --brand-dark: #164a87;
-  --brand-light: #eaf2fb;     /* 浅蓝辅助 */
-  --text: #2a2a2a;            /* 正文深色 */
-  --muted: #666;              /* 次要文字 */
-  --label: #333;              /* 字段标签 */
-  --border: #d8d8d8;
-  --bg: #f2f2f2;              /* 页面底色 */
-  --paper: #ffffff;           /* 简历纸色 */
-}
-
 * { box-sizing: border-box; }
 
 html, body {
   margin: 0;
   padding: 0;
-  background: var(--bg);
-  color: var(--text);
+  background: var(--ink-bg);
+  color: var(--ink);
   font: 14px/1.7 "Microsoft YaHei", "PingFang SC", "Helvetica Neue", Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
@@ -46,7 +34,7 @@ img { max-width: 100%; height: auto; display: block; }
   width: 100%;
   max-width: 860px;
   margin: 24px auto;
-  background: var(--paper);
+  background: var(--card-surface);
   box-shadow: 0 2px 16px rgba(0, 0, 0, 0.08);
   padding: 0;
   overflow: hidden;
@@ -121,12 +109,12 @@ img { max-width: 100%; height: auto; display: block; }
 .info-col p {
   margin: 4px 0;
   font-size: 13.5px;
-  color: var(--text);
+  color: var(--ink);
   white-space: nowrap;
 }
 
 .info-col .label {
-  color: var(--label);
+  color: var(--ink-label);
   font-weight: 600;
   display: inline-block;
   min-width: 72px;
@@ -140,7 +128,7 @@ img { max-width: 100%; height: auto; display: block; }
   width: 100px;
   height: 120px;
   object-fit: cover;
-  border: 1px solid var(--border);
+  border: 1px solid var(--card-border);
   background: var(--brand-light);
 }
 
@@ -159,13 +147,13 @@ img { max-width: 100%; height: auto; display: block; }
 }
 
 .entry-head .time {
-  color: var(--muted);
+  color: var(--ink-muted);
   font-size: 13px;
 }
 
 .entry-head .school {
   font-weight: 700;
-  color: var(--text);
+  color: var(--ink);
 }
 
 .entry-head .degree {
@@ -176,7 +164,7 @@ img { max-width: 100%; height: auto; display: block; }
 .entry-body {
   margin: 4px 0 8px;
   font-size: 13.5px;
-  color: var(--text);
+  color: var(--ink);
 }
 
 /* ===== 要点列表 ===== */
@@ -188,7 +176,7 @@ img { max-width: 100%; height: auto; display: block; }
 .bullets li {
   margin: 3px 0;
   font-size: 13.5px;
-  color: var(--text);
+  color: var(--ink);
 }
 
 /* ===== 自我评价 ===== */
@@ -196,7 +184,7 @@ img { max-width: 100%; height: auto; display: block; }
   margin: 4px 0 18px;
   font-size: 13.5px;
   line-height: 1.85;
-  color: var(--text);
+  color: var(--ink);
 }
 
 /* ===== 小屏自适应（≤ 640px） ===== */
