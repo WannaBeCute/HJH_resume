@@ -592,6 +592,10 @@ body::after {
   padding: 28px 30px;
 }
 
+/* 头像圆形底：里面放图片。
+   渐变底色保留 —— 图片没加载出来时它就是一个彩色圆底，不会露出破图。
+   ⚠️ 加白底描边是必要的：头像图是白底插画，深色主题下圆边会「糊」在卡片里，
+      一圈浅色描边能把轮廓和卡片分开。 */
 .profile-avatar {
   width: 84px;
   height: 84px;
@@ -600,13 +604,16 @@ body::after {
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
   background: linear-gradient(135deg, #667eea, #764ba2);
-  color: #fff;
-  font-family: var(--font-serif);
-  font-size: 34px;
-  font-weight: 600;
-  letter-spacing: 2px;
   box-shadow: 0 8px 20px rgba(102, 126, 234, .38);
+}
+
+.profile-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
 .profile-name {
