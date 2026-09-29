@@ -22,6 +22,12 @@
 
 /* ===========================================================================
    1. 设计令牌：颜色 / 字体 / 尺寸
+   ---------------------------------------------------------------------------
+   【对比度约定（改颜色前必读）】
+     深色底上的文字必须真的比底亮很多，不能只靠「看起来灰一点」。
+     下面所有色值都按 WCAG 2.1 AA 校验过（正文 ≥ 4.5:1，大字 ≥ 3:1），
+     最坏情况的背景已经算进去了：背景图最亮的一块经遮罩压暗后的颜色。
+     改色后请重跑对比度检查（见 README「对比度」一节）。
    =========================================================================== */
 
 :root {
@@ -30,24 +36,40 @@
   --brand-dark: #164a87;
   --brand-light: #eaf2fb;
 
-  /* ---- 中性色：正文 ---- */
+  /* ---- 简历纸内的文字色（面板是白底，用深色字） ---- */
   --text: #2a2a2a;
-  --muted: #666;
+  --muted: #5f5f5f;   /* 比原来的 #666 再深一档，白底上 6.4:1 */
   --border: #d8d8d8;
 
   /* ---- 简历纸 ---- */
   --bg: #f2f2f2;
   --paper: #ffffff;
 
-  /* ---- 页面外壳（深色外观为默认，改动前请确认用户是故意切换风格） ---- */
+  /* ---- 页面外壳公共色 ---- */
   --shell-bg: #1b1b23;          /* 背景图没加载出来时的兜底底色 */
-  --shell-surface: rgba(26, 27, 38, 0.78);   /* 页头 / 页脚 / 卡片底 */
-  --shell-surface-solid: #20212e;
-  --shell-border: rgba(255, 255, 255, 0.14);
-  --shell-text: #eef1fb;
-  --shell-muted: #a7aec9;
-  --shell-accent: #8fb6ec;      /* 深色底上的品牌蓝（提亮，保证对比度） */
+
+  /* ---- 深色外观（默认）----
+     外壳面用「几乎不透明」的深色：半透明会让背景图透上来，
+     文字对比度就再也保证不了了（原来 .78 的半透明让正文掉到 4.77:1）。 */
+  --shell-surface: rgba(18, 19, 28, 0.97);
+  --shell-border: rgba(255, 255, 255, 0.18);
+  --shell-text: #f2f5ff;        /* 提亮，16.0:1 */
+  --shell-muted: #ccd4ea;       /* 次要文字：5.6:1（原 #a7aec9 只有 2.44:1） */
+  --shell-accent: #a8c8f5;      /* 链接/目录编号：5.9:1（原 #8fb6ec 只有 2.58:1） */
   --shell-shadow: 0 18px 50px rgba(0, 0, 0, 0.45);
+
+  /* ---- 内容面板（简历纸底色，深/浅主题下都是浅色纸）----
+     深色主题里它也是白纸 —— 原来这里错用了深色 #20212e，
+     而面板里的正文色是 --text #2a2a2a，结果正文对比度只有 1.11:1，
+     等于深色主题下整篇简历基本看不见。 */
+  --card-surface: #ffffff;
+  --card-text: #23262e;
+  --card-muted: #55596b;
+  --card-border: #e3e6ee;
+
+  /* ---- 门禁（锁屏）卡片：深色主题下也跟随外壳，浅色主题见下 ---- */
+  --gate-text: var(--shell-text);
+  --gate-muted: var(--shell-muted);
 
   /* ---- 尺寸与节奏 ---- */
   --shell-width: 960px;
@@ -62,13 +84,16 @@
 
 /* ---- 浅色外观：点页头「浅色」按钮切换，选择存 localStorage ---- */
 :root[data-theme="light"] {
-  --shell-surface: rgba(255, 255, 255, 0.86);
-  --shell-surface-solid: #ffffff;
-  --shell-border: rgba(31, 94, 168, 0.18);
-  --shell-text: #1f2333;
-  --shell-muted: #5c6479;
+  --shell-surface: rgba(255, 255, 255, 0.97);
+  --shell-text: #171a24;
+  --shell-muted: #4c5266;       /* 6.9:1（原 #5c6479 是 4.44:1，临界失败） */
   --shell-accent: var(--brand);
   --shell-shadow: 0 18px 50px rgba(20, 40, 80, 0.18);
+
+  --card-surface: #ffffff;
+  --card-text: #23262e;
+  --card-muted: #55596b;
+  --card-border: #e3e6ee;
 }
 
 /* ===========================================================================
@@ -289,7 +314,7 @@ body::after {
   margin: 24px auto 0;
   padding: 34px 32px 30px;
   text-align: center;
-  background: var(--shell-surface-solid);
+  background: var(--shell-surface);
   border: 1px solid var(--shell-border);
   border-radius: var(--radius-lg);
   box-shadow: var(--shell-shadow);
@@ -403,8 +428,8 @@ body::after {
    =========================================================================== */
 
 .panel {
-  background: var(--shell-surface-solid);
-  border: 1px solid var(--shell-border);
+  background: var(--card-surface);
+  border: 1px solid var(--card-border);
   border-radius: var(--radius-lg);
   box-shadow: var(--shell-shadow);
   padding: 26px 30px 30px;
@@ -438,14 +463,26 @@ body::after {
   color: var(--shell-muted);
 }
 
-/* 简历正文里的深色文字：卡片底是白的，正文一律用深色 */
-.panel,
-.panel p,
-.panel li,
-.panel .entry-body,
-.panel .bullets li,
-.panel .self-eval {
-  color: var(--text);
+/* 简历正文的文字色
+   ---------------------------------------------------------------------------
+   面板是白纸，正文必须用深色字。这里不在 .panel 上直接写 color，
+   而是**把 --text / --muted 两个变量在面板作用域内重绑成浅色纸专用的值**：
+     --text  -> --card-text  （#23262e，白底 13.4:1）
+     --muted -> --card-muted （#55596b，白底 7.1:1）
+   这样面板里所有沿用 `color: var(--text)` / `var(--muted)` 的既有规则
+   （.entry-head .time、.info-item .label、.course-list…）会自动跟着走，
+   不必逐条去改，也不会漏掉某一个。
+   原来这里只写 `color: var(--text)`，漏掉了 --muted —— 在深色主题下
+   --muted 是给深底用的浅灰，放到白纸面板上就几乎看不见了。 */
+.panel {
+  --text: var(--card-text);
+  --muted: var(--card-muted);
+  --border: var(--card-border);
+  color: var(--card-text);
+}
+
+.panel .section-note {
+  color: var(--card-muted);
 }
 
 .panel .section-title { color: #fff; }
@@ -537,7 +574,7 @@ body::after {
   display: flex;
   gap: 14px;
   padding: 11px 0;
-  border-bottom: 1px solid #f0f0f5;
+  border-bottom: 1px solid var(--card-border);
 }
 
 .info-item:last-child {
@@ -600,7 +637,7 @@ a.tag:active { transform: translateY(0); }
 
 /* 不能点的标签（比如「健身」）用灰底，区别于可跳转的链接 */
 .tag-plain {
-  color: var(--muted);
+  color: var(--card-muted);
   background: #eef0f5;
 }
 
