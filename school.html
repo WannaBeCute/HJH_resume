@@ -8,12 +8,17 @@
 
   <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg">
 
+  <!-- 关键资源预加载：背景图是首屏可见背景，越早开始下载越好；
+       gdit-crypto.js 是解锁流程的依赖，不能等到解析完才去拿。 -->
+  <link rel="preload" as="image" href="assets/img/default-blur.webp?v=89836fc8" fetchpriority="high">
+  <link rel="preload" as="script" href="assets/js/gdit-crypto.js?v=e35b370f">
+
   <!-- 首屏防闪烁样式：必须在 site.css 之前，见 gate.css 顶部注释 -->
-  <link rel="stylesheet" href="assets/css/gate.css">
-  <!-- 整站设计系统（背景模糊 10px、蓝色商务风、页头页脚…） -->
-  <link rel="stylesheet" href="assets/css/site.css">
+  <link rel="stylesheet" href="assets/css/gate.css?v=f0db97cf">
+  <!-- 整站设计系统（背景、蓝色商务风、页头页脚…） -->
+  <link rel="stylesheet" href="assets/css/site.css?v=ec2e54d8">
   <!-- 简历正文排版（由 jianli/ 生成，只含排版不含资料） -->
-  <link rel="stylesheet" href="assets/css/resume.css">
+  <link rel="stylesheet" href="assets/css/resume.css?v=03edf251">
 
   <!-- 主题初始化：必须在解析阶段执行，否则首帧会从深色跳成浅色（闪烁） -->
   <script>
@@ -29,7 +34,7 @@
       document.documentElement.setAttribute('data-theme', t);
     })();
   </script>
-  <script src="assets/js/site.js" defer></script>
+  <script src="assets/js/site.js?v=ed7e8a77" defer></script>
 </head>
 <body>
 
@@ -45,6 +50,7 @@
           <a href="about.html">关于我</a>
           <a href="school.html" aria-current="page">我的学校</a>
           <a href="hometown.html">我的家乡</a>
+          <a href="works.html">我的作品</a>
           <a href="records.html">比赛记录</a>
           <a href="intro.html">个人简历</a>
       </nav>
@@ -104,6 +110,7 @@
           <a href="about.html">关于我</a>
           <a href="school.html">我的学校</a>
           <a href="hometown.html">我的家乡</a>
+          <a href="works.html">我的作品</a>
           <a href="records.html">比赛记录</a>
           <a href="intro.html">个人简历</a>
       </nav>
@@ -133,7 +140,7 @@
     <p style="text-align:center;color:#a7aec9">本页需要启用 JavaScript 才能解密显示正文。</p>
   </noscript>
 
-  <script src="assets/js/gdit-crypto.js"></script>
+  <script src="assets/js/gdit-crypto.js?v=e35b370f"></script>
   <script>
     /* ===== 本页密文（build.js 注入，base64；正文明文不在本文件里）===== */
     var payload = {"v":1,"iter":20000,"salt":"1714cc612bcc06a8b36c566f9810ef58","c":"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"};

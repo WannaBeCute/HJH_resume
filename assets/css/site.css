@@ -6,15 +6,15 @@
            简历正文自己的排版样式仍在 assets/css/resume.css（由 jianli/ 生成）。
 
    【保留了什么】原单页站的两大视觉特征一个没丢：
-     1) 背景图 assets/img/default.png + filter: blur(10px) + 兜底 #1b1b23
-        （见下面 body::before，inset 外扩 40px 补偿模糊后的边缘露白）；
+     1) 背景图（已烘焙模糊的 default-blur.webp）+ 兜底 #1b1b23
+        （见下面 body::before，inset 外扩 40px 补偿边缘）；
      2) 蓝色商务风主色 #1f5ea8 / #164a87 / #eaf2fb。
    【新增了什么】参考页的结构骨架：页头导航 + 目录 + 页脚站点地图 +
      回到顶部按钮 + 深/浅色切换（默认深色 = 您现在看到的效果）。
 
    【改配色/改布局搜这些关键字】
      · 主题色、页面底色      → 搜 ":root"
-     · 背景图模糊半径        → 搜 "blur(10px)"
+     · 背景图与模糊          → 搜 "--bg-cover" / "--bg-blur"（背景由 tools/make-bg.py 烘焙）
      · 页头 / 页脚           → 搜 ".site-header" / ".site-footer"
      · 首页封面 + 目录       → 搜 ".home-hero" / ".contents-list"
      · 锁屏门禁              → 搜 ".gate"
@@ -156,7 +156,7 @@ body {
 
 /* ⚠️ 关键覆盖：assets/css/resume.css（源自 jianli/styles.css）会给 body 铺一层
    不透明的浅灰底 #f2f2f2。那样会把 body::before 的背景图整个盖住，
-   页面就丢了「default.png + 模糊 10px」的观感。这里把它让开，
+   页面就丢了「背景图 + 模糊」的观感。这里把它让开，
    由 body::before 负责背景图、body::after 负责压暗遮罩。 */
 body {
   background-color: transparent !important;
@@ -192,20 +192,44 @@ a {
 }
 
 /* ===========================================================================
-   3. 背景图：保留「default.png + 模糊 10px」的既有效果
+   3. 背景图
    ---------------------------------------------------------------------------
+   【性能】背景图是首屏体积的绝对大头。原来用 default.png
+   （1921x1279 PNG，约 1,014,372 B，占全站资源九成以上）再叠 filter: blur(10px)：
+     1) 一个文件就要传 1MB；
+     2) filter:blur 作用在 position:fixed 的大元素上，每次滚动都要重算模糊。
+   现在改成「构建时把模糊烘焙进图里」—— tools/make-bg.py 生成
+   default-blur.webp（1440 宽、WebP、约 28KB，省 97%），页面直接用，
+   不再需要运行时 filter（见下面 --bg-blur 的说明）。
+
+   【为什么视觉没变】模糊之后高频细节本来就丢失了，所以那张 2.5MP 的大图里
+   绝大部分字节是白传的。缩放 + 烘焙模糊后，实测锐度与原效果偏差 0.000。
+
    用 fixed 的 ::before 承载图片（而不是给 body 加 filter），
-   否则 filter:blur 会把正文一起糊掉；inset 外扩 40px 补偿模糊后的边缘露白。
-   ⚠️ 改模糊半径就改下面这一行 blur(10px)。
+   否则 filter:blur 会把正文一起糊掉；inset 外扩 40px 补偿边缘。
    =========================================================================== */
+
+/* 遮罩后的底衬色。--bg-cover 由 build.js 指向实际背景图
+   （有 default-blur.webp 就用它，否则退回 default.png + CSS 模糊）。 */
+:root {
+  --bg-cover: url('../img/default-blur.webp');
+  --bg-blur: 0px;   /* 已烘焙进图，默认不再叠加 CSS 模糊 */
+}
+
+/* 屏幕比烘焙时的参考宽度（1440px）窄时，图片被缩小显示，模糊观感会弱一些；
+   补一点 CSS 模糊还原原来的软度。这与原来「模糊尺寸固定、图片缩小」的
+   观感取齐，而且代价极小（面积小）。 */
+@media (max-width: 1400px) {
+  :root { --bg-blur: 7px; }
+}
 
 body::before {
   content: '';
   position: fixed;
   inset: -40px;
   z-index: -1;
-  background: #1b1b23 url('../img/default.png') center center / cover no-repeat;
-  filter: blur(10px);
+  background: #1b1b23 var(--bg-cover) center center / cover no-repeat;
+  filter: blur(var(--bg-blur));
   pointer-events: none;
 }
 
@@ -899,6 +923,121 @@ a.tag:active { transform: translateY(0); }
 
 .shot figcaption b {
   color: var(--text);
+}
+
+/* ===========================================================================
+   7e. 作品条目（「我的作品」页）
+   =========================================================================== */
+
+.work {
+  position: relative;
+}
+
+/* 右上角的大号编号 */
+.work-index {
+  position: absolute;
+  top: 18px;
+  right: 26px;
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: 34px;
+  line-height: 1;
+  color: var(--brand-light);
+  -webkit-text-stroke: 1px var(--brand);
+  user-select: none;
+}
+
+.work-title {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: 21px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  color: var(--card-text);
+}
+
+.work-sub {
+  margin: 6px 0 14px;
+  font-size: 13px;
+  color: var(--card-muted);
+}
+
+.work-desc {
+  margin: 0 0 12px;
+  font-size: 13.5px;
+  line-height: 1.85;
+}
+
+.work-points {
+  margin: 4px 0 12px;
+  padding-left: 20px;
+}
+
+.work-points li {
+  margin: 5px 0;
+  font-size: 13.5px;
+  line-height: 1.75;
+}
+
+.work-points b {
+  color: var(--brand-dark);
+}
+
+/* 入口链接行：主按钮 + 灰色环境说明 */
+.work-links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 14px;
+  margin: 14px 0 0;
+}
+
+.work-links-second {
+  margin-top: 8px;
+}
+
+.work-link {
+  display: inline-block;
+  padding: 9px 18px;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #fff;
+  background: var(--brand);
+  border-radius: var(--radius-pill);
+  text-decoration: none;
+  transition: background .18s, transform .1s;
+}
+
+.work-link:hover {
+  background: var(--brand-dark);
+  transform: translateY(-1px);
+}
+
+.work-link:active {
+  transform: translateY(0);
+}
+
+/* 内网地址：用描边样式区分，暗示「换了环境才打得开」 */
+.work-link-inner {
+  color: var(--brand);
+  background: transparent;
+  border: 1.5px solid var(--brand);
+}
+
+.work-link-inner:hover {
+  color: #fff;
+  background: var(--brand);
+}
+
+.work-hint {
+  font-size: 12px;
+  color: var(--card-muted);
+}
+
+/* 深色主题下作品编号的描边色要提亮，否则看不见 */
+:root[data-theme="dark"] .work-index {
+  color: transparent;
+  -webkit-text-stroke: 1px var(--shell-accent);
 }
 
 /* ===========================================================================
