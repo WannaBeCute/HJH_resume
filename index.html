@@ -3,539 +3,159 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>个人简介</title>
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+  <meta name="description" content="个人简历网站首页：封面与全站目录。">
+  <title>首页 · 个人简历站</title>
 
-    body {
-      font-family: "Microsoft YaHei", "PingFang SC", "Helvetica Neue", Arial, sans-serif;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      /* 兜底底色：图片没加载出来时显示；真正的模糊背景由下方 body::before 提供 */
-      background: #1b1b23;
-      padding: 20px;
-    }
+  <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg">
 
-    .card {
-      width: 100%;
-      max-width: 560px;
-      background: #ffffff;
-      border-radius: 20px;
-      padding: 40px;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
-    }
-
-    .avatar {
-      width: 96px;
-      height: 96px;
-      margin: 0 auto 20px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: linear-gradient(135deg, #667eea, #764ba2);
-      color: #fff;
-      font-size: 40px;
-      font-weight: bold;
-      letter-spacing: 2px;
-    }
-
-    h1 {
-      text-align: center;
-      font-size: 28px;
-      color: #333;
-      margin-bottom: 4px;
-    }
-
-    .subtitle {
-      text-align: center;
-      color: #8892b0;
-      font-size: 14px;
-      margin-bottom: 28px;
-    }
-
-    .info-item { display: flex; padding: 14px 0; border-bottom: 1px solid #f0f0f5; }
-    .info-item:last-child { border-bottom: none; }
-    .label { flex: 0 0 80px; font-weight: bold; color: #555; }
-    .value { color: #222; flex: 1; line-height: 1.6; }
-
-    .hobbies { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 6px; }
-    .tag {
-      display: inline-block;
-      background: #eef0ff; color: #667eea;
-      padding: 6px 14px; border-radius: 20px; font-size: 13px;
-      text-decoration: none;
-      transition: background .15s, transform .1s;
-    }
-    a.tag { cursor: pointer; }
-    a.tag:hover {
-      background: #dfe4ff;
-      transform: translateY(-1px);
-    }
-    a.tag:active { transform: translateY(0); }
-
-    .school-link {
-      color: #d32f2f;
-      font-weight: 600;
-      text-decoration: none;
-    }
-    .school-link:hover { text-decoration: underline; }
-
-    /* ---------- 锁屏 ---------- */
-    .lock-card { max-width: 400px; text-align: center; }
-
-    .lock-ico {
-      width: 84px; height: 84px; margin: 0 auto 18px;
-      border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      background: linear-gradient(135deg, #667eea, #764ba2);
-      box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
-    }
-
-    .lock-title { font-size: 24px; }
-    .lock-sub { color: #8892b0; font-size: 13px; line-height: 1.7; margin: 8px 0 22px; }
-
-    .lock-form input {
-      width: 100%;
-      padding: 13px 16px;
-      font-size: 16px;
-      border: 1.5px solid #dfe3f0;
-      border-radius: 12px;
-      outline: none;
-      color: #333;
-      transition: border-color .2s, box-shadow .2s;
-    }
-    .lock-form input:focus {
-      border-color: #667eea;
-      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.18);
-    }
-    .lock-form button {
-      width: 100%;
-      margin-top: 12px;
-      padding: 13px 16px;
-      font-size: 16px;
-      font-weight: bold;
-      color: #fff;
-      letter-spacing: 6px;
-      background: linear-gradient(135deg, #667eea, #764ba2);
-      border: none;
-      border-radius: 12px;
-      cursor: pointer;
-      transition: transform .1s, box-shadow .2s, opacity .2s;
-    }
-    .lock-form button:hover { box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4); }
-    .lock-form button:active { transform: translateY(1px); }
-    .lock-form button:disabled { opacity: .6; cursor: wait; }
-
-    .lock-msg { min-height: 22px; margin-top: 14px; font-size: 13px; color: #e2574c; }
-    .lock-foot { margin-top: 4px; font-size: 12px; color: #c0c5d4; }
-
-    @keyframes shake {
-      10%, 90% { transform: translateX(-2px); }
-      20%, 80% { transform: translateX(3px); }
-      30%, 50%, 70% { transform: translateX(-5px); }
-      40%, 60% { transform: translateX(5px); }
-    }
-    .shake { animation: shake .45s ease; }
-
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(12px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-    .reveal { animation: fadeUp .5s ease; }
-
-    /* ---------- 解锁后的浮动操作组：跳另一页 + 锁定（由 build.js 注入，两页共用）---------- */
-    /* ===== 解锁后的浮动操作组：跳另一页 + 锁定 ===== */
-    .page-actions {
-      position: fixed; right: 18px; bottom: 18px; z-index: 99;
-      display: flex; gap: 10px; align-items: center;
-    }
-    .action-btn {
-      padding: 9px 18px; font-size: 13px; font-family: inherit; line-height: 1.4;
-      border: none; border-radius: 999px; cursor: pointer; text-decoration: none;
-      box-shadow: 0 4px 14px rgba(0,0,0,.2);
-      transition: transform .1s, box-shadow .2s, background .2s;
-    }
-    .action-btn:hover { transform: translateY(-1px); }
-    .action-btn:active { transform: translateY(0); }
-    .action-nav { color: #fff; font-weight: bold;
-      background: linear-gradient(135deg, #667eea, #764ba2); }
-    .action-nav:hover { box-shadow: 0 8px 20px rgba(102,126,234,.5); }
-    .action-lock { color: #fff; background: rgba(31,94,168,.85); }
-    .action-lock:hover { background: rgba(31,94,168,1); }
-    @media print { .page-actions { display: none; } }
-
-
-    /* ---------- 背景图：模糊 10px + 兜底底色（由 build.js 注入，两页共用）---------- */
-    /* ===== 背景图：模糊 10px（用户要求）+ 兜底底色 =====
-       用 fixed 的 ::before 承载图片，避免 filter:blur 把正文也糊掉，
-       inset 外扩 40px 补偿模糊后的边缘露白。 */
-    body::before {
-      content: '';
-      position: fixed;
-      inset: -40px;
-      z-index: -1;
-      background: #1b1b23 url('assets/img/default.png') center center / cover no-repeat;
-      filter: blur(10px);
-      pointer-events: none;
-    }
-
-  </style>
+  <!-- 首屏防闪烁样式：必须在 site.css 之前，见 gate.css 顶部注释 -->
+  <link rel="stylesheet" href="assets/css/gate.css">
+  <!-- 整站设计系统（背景模糊 10px、蓝色商务风、页头页脚…） -->
+  <link rel="stylesheet" href="assets/css/site.css">
+  <!-- 简历正文排版（由 jianli/ 生成，只含排版不含资料） -->
+  <link rel="stylesheet" href="assets/css/resume.css">
+  <meta name="keywords" content="个人简历, 人工智能技术应用, 大模型开发, 智能体开发">
+  <!-- 主题初始化：必须在解析阶段执行，否则首帧会从深色跳成浅色（闪烁） -->
+  <script>
+    (function () {
+      var t = '';
+      try { t = localStorage.getItem('gdit_theme_v1') || ''; } catch (e) { t = ''; }
+      if (t !== 'light' && t !== 'dark') {
+        t = "dark";
+        try {
+          if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) t = 'light';
+        } catch (e) { /* 忽略 */ }
+      }
+      document.documentElement.setAttribute('data-theme', t);
+    })();
+  </script>
+  <script src="assets/js/site.js" defer></script>
 </head>
 <body>
 
-  <!-- 锁屏 -->
-  <div class="card lock-card" id="lockCard">
-    <div class="lock-ico" aria-hidden="true">
-      <svg viewBox="0 0 24 24" width="38" height="38" fill="none"
-           stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="4" y="11" width="16" height="10" rx="2"/>
-        <path d="M8 11V7a4 4 0 0 1 8 0v4"/>
-      </svg>
+  <a class="skip-link" href="#pageContent">跳到正文</a>
+
+  <!-- ===== 页头导航（六页共用；锁屏期间也可见，站点结构不是秘密）===== -->
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="index.html">个人简历站</a>
+
+      <nav class="site-nav" aria-label="主导航">
+          <a href="index.html" aria-current="page">首页</a>
+          <a href="about.html">关于我</a>
+          <a href="school.html">我的学校</a>
+          <a href="hometown.html">我的家乡</a>
+          <a href="records.html">比赛记录</a>
+          <a href="intro.html">个人简历</a>
+      </nav>
+
+      <!-- 深/浅色切换：图标与文案由 site.js 按当前主题更新 -->
+      <button class="theme-toggle" type="button" aria-pressed="false" aria-label="切换到浅色模式">
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="4.2"></circle>
+          <path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.2 5.2l1.4 1.4M17.4 17.4l1.4 1.4M18.8 5.2l-1.4 1.4M6.6 17.4l-1.4 1.4"></path>
+        </svg>
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5Z"></path>
+        </svg>
+        <span class="theme-toggle-label">浅色</span>
+      </button>
     </div>
-    <h1 class="lock-title">个人简介</h1>
-    <p class="lock-sub">本页资料已加密保存，<br>请输入访问密码进行解密查看。</p>
+  </header>
 
-    <form id="loginForm" class="lock-form" novalidate autocomplete="off">
-      <input id="pwInput" type="password" placeholder="请输入访问密码"
-             autocomplete="off" spellcheck="false" autocapitalize="off" />
-      <button id="enterBtn" type="submit">解 锁</button>
-    </form>
-    <p class="lock-msg" id="msgLine"></p>
-    <p class="lock-foot">忘记密码请联系作者</p>
-  </div>
+  <main class="site-main">
+      <!-- ===== 锁屏门禁：正文是密文，解锁后才由脚本渲染出来 ===== -->
+      <div class="gate" id="gate">
+        <div class="gate-inner">
+          <div class="gate-ico" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="36" height="36" fill="none"
+                 stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="4" y="11" width="16" height="10" rx="2"/>
+              <path d="M8 11V7a4 4 0 0 1 8 0v4"/>
+            </svg>
+          </div>
 
-  <!-- 解密后的正文（初始为空，解密成功后填充） -->
-  <div class="card" id="profileCard" hidden></div>
+          <h1 class="gate-title">首页</h1>
+          <p class="gate-sub">本页个人简介已加密保存，<br>请输入访问密码进行解密查看。</p>
 
-  <!-- 「跳另一页 + 锁定」操作组占位符：由 build.js 注入（单文件版替换为空字符串） -->
-  <!-- 解锁后才显示的操作组：跳另一页 + 锁定 -->
-  <div class="page-actions" id="pageActions" hidden>
-    <a class="action-btn action-nav" id="navBtn" href="intro.html" title="查看个人简历">个人简历 →</a>
+          <form id="gateForm" class="gate-form" novalidate autocomplete="off">
+            <label class="skip-link" for="pwInput">访问密码</label>
+            <input id="pwInput" type="password" placeholder="请输入访问密码"
+                   autocomplete="off" spellcheck="false" autocapitalize="off" />
+            <button id="gateBtn" type="submit">解 锁</button>
+          </form>
+
+          <p class="gate-msg" id="gateMsg" role="status"></p>
+          <p class="gate-foot">忘记密码请联系作者</p>
+        </div>
+      </div>
+
+    <!-- ===== 加密正文的容器：初始 hidden，解锁后由脚本填入并显示 ===== -->
+    <div id="pageHost" hidden></div>
+  </main>
+
+  <!-- ===== 页脚：站点地图 ===== -->
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <nav class="footer-nav" aria-label="页脚导航">
+          <a href="index.html">首页</a>
+          <a href="about.html">关于我</a>
+          <a href="school.html">我的学校</a>
+          <a href="hometown.html">我的家乡</a>
+          <a href="records.html">比赛记录</a>
+          <a href="intro.html">个人简历</a>
+      </nav>
+
+      <p class="footer-meta">
+        <span>个人简历站 · © <span id="footerYear">2026</span></span>
+        <span aria-hidden="true"> · </span>
+        <a href="intro.html">联系方式见「个人简历」页</a>
+      </p>
+    </div>
+  </footer>
+
+  <!-- ===== 解锁后才显示的浮动操作组：上一页 / 下一页 / 锁定 ===== -->
+  <nav class="page-actions" id="pageActions" hidden aria-label="页面操作">
+    <a class="action-btn action-nav" href="intro.html" title="上一页：个人简历">← 个人简历</a>
+    <a class="action-btn action-nav" href="about.html" title="下一页：关于我">关于我 →</a>
     <button class="action-btn action-lock" id="lockBtn" type="button" title="重新隐藏本页内容">锁定</button>
-  </div>
+  </nav>
 
+  <!-- 回到顶部 -->
+  <button class="to-top" type="button" aria-label="回到顶部">
+    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor"
+         stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M12 19V5M5 12l7-7 7 7"></path>
+    </svg>
+  </button>
+
+  <noscript>
+    <p style="text-align:center;color:#a7aec9">本页需要启用 JavaScript 才能解密显示正文。</p>
+  </noscript>
+
+  <script src="assets/js/gdit-crypto.js"></script>
   <script>
-
-/*
- * gdit-crypto.js —— 纯 JS、零依赖的“内容加密/解密”模块。
- *
- * 重要说明（请务必理解）：
- *   这是纯前端(静态)方案。浏览器必须先执行 JS 才能解密渲染内容，
- *   因此任何懂开发工具的人都能改 JS 绕过校验。本模块的作用只是：
- *     1) 让真正的资料正文(姓名/学号/班级…)在源码与文件里不出现明文；
- *     2) 必须输入正确密码才能得到明文。
- *   它【不能】提供真正的安全保护，仅用于提高“查看门槛”。
- *
- * 算法：
- *   密钥 = PBKDF2-HMAC-SHA256(password, salt, iterations, 32字节)
- *   密钥流 = HMAC-SHA256(密钥, 计数器0,1,2,…) 产生的伪随机字节
- *   密文 = 明文(带标记前缀) XOR 密钥流
- *   明文(UTF-8) 以固定标记开头，用于在校验错误时识别“密码错误”。
- */
-(function (root) {
-  'use strict';
-
-  var MARKER = '__GDIT_OK__';
-  var DEFAULT_ITER = 20000;
-  var KEY_LEN = 32; // 派生密钥长度 32 字节
-
-  /* ---------------- SHA-256 ---------------- */
-
-  var K256 = new Uint32Array([
-    0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5,
-    0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3, 0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174,
-    0xe49b69c1, 0xefbe4786, 0x0fc19dc6, 0x240ca1cc, 0x2de92c6f, 0x4a7484aa, 0x5cb0a9dc, 0x76f988da,
-    0x983e5152, 0xa831c66d, 0xb00327c8, 0xbf597fc7, 0xc6e00bf3, 0xd5a79147, 0x06ca6351, 0x14292967,
-    0x27b70a85, 0x2e1b2138, 0x4d2c6dfc, 0x53380d13, 0x650a7354, 0x766a0abb, 0x81c2c92e, 0x92722c85,
-    0xa2bfe8a1, 0xa81a664b, 0xc24b8b70, 0xc76c51a3, 0xd192e819, 0xd6990624, 0xf40e3585, 0x106aa070,
-    0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5, 0x391c0cb3, 0x4ed8aa4a, 0x5b9cca4f, 0x682e6ff3,
-    0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208, 0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2
-  ]);
-
-  function rotr(x, n) { return (x >>> n) | (x << (32 - n)); }
-
-  function sha256(bytes) {
-    var l = bytes.length;
-    var bitLenHi = Math.floor(l / 0x20000000); // 总比特数的高32位
-    var bitLenLo = (l << 3) >>> 0;             // 总比特数的低32位
-    var paddedLen = (((l + 1 + 8 + 63) >> 6) << 6); // 向上取整到 64 的倍数
-    var msg = new Uint8Array(paddedLen);
-    msg.set(bytes);
-    msg[l] = 0x80;
-    var dv = new DataView(msg.buffer);
-    dv.setUint32(paddedLen - 8, bitLenHi);
-    dv.setUint32(paddedLen - 4, bitLenLo);
-
-    var H = [0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a,
-             0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19];
-    var w = new Uint32Array(64);
-
-    for (var base = 0; base < paddedLen; base += 64) {
-      var i, t;
-      for (i = 0; i < 16; i++) w[i] = dv.getUint32(base + i * 4);
-      for (i = 16; i < 64; i++) {
-        var w15 = w[i - 15], w2 = w[i - 2];
-        var s0 = (w15 >>> 7) ^ (w15 >>> 18) ^ (w15 >>> 3);
-        var s1 = (w2 >>> 17) ^ (w2 >>> 19) ^ (w2 >>> 10);
-        w[i] = (w[i - 16] + s0 + w[i - 7] + s1) | 0;
-      }
-      var a = H[0], b = H[1], c = H[2], d = H[3], e = H[4], f = H[5], g = H[6], h = H[7];
-      for (t = 0; t < 64; t++) {
-        var S1 = rotr(e, 6) ^ rotr(e, 11) ^ rotr(e, 25);
-        var ch = (e & f) ^ ((~e) & g);
-        var temp1 = (h + S1 + ch + K256[t] + w[t]) | 0;
-        var S0 = rotr(a, 2) ^ rotr(a, 13) ^ rotr(a, 22);
-        var maj = (a & b) ^ (a & c) ^ (b & c);
-        var temp2 = (S0 + maj) | 0;
-        h = g; g = f; f = e; e = (d + temp1) | 0; d = c; c = b; b = a; a = (temp1 + temp2) | 0;
-      }
-      H[0] = (H[0] + a) | 0; H[1] = (H[1] + b) | 0; H[2] = (H[2] + c) | 0; H[3] = (H[3] + d) | 0;
-      H[4] = (H[4] + e) | 0; H[5] = (H[5] + f) | 0; H[6] = (H[6] + g) | 0; H[7] = (H[7] + h) | 0;
-    }
-    var out = new Uint8Array(32);
-    for (i = 0; i < 8; i++) {
-      out[i * 4] = (H[i] >>> 24) & 255;
-      out[i * 4 + 1] = (H[i] >>> 16) & 255;
-      out[i * 4 + 2] = (H[i] >>> 8) & 255;
-      out[i * 4 + 3] = H[i] & 255;
-    }
-    return out;
-  }
-
-  /* ---------------- HMAC-SHA256 ---------------- */
-
-  function hmacSha256(key, msg) {
-    var keyBytes = (key.length > 64) ? sha256(key) : key;
-    var ipad = new Uint8Array(64), opad = new Uint8Array(64);
-    for (var i = 0; i < 64; i++) {
-      var kk = (i < keyBytes.length) ? keyBytes[i] : 0;
-      ipad[i] = kk ^ 0x36;
-      opad[i] = kk ^ 0x5c;
-    }
-    var inner = new Uint8Array(64 + msg.length);
-    inner.set(ipad, 0);
-    inner.set(msg, 64);
-    var ih = sha256(inner);
-    var outer = new Uint8Array(64 + ih.length);
-    outer.set(opad, 0);
-    outer.set(ih, 64);
-    return sha256(outer);
-  }
-
-  /* ---------------- PBKDF2-HMAC-SHA256 ---------------- */
-
-  function pbkdf2(password, salt, iterations, dkLen) {
-    var out = new Uint8Array(dkLen);
-    var numBlocks = Math.ceil(dkLen / 32);
-    for (var block = 1; block <= numBlocks; block++) {
-      var blockMsg = new Uint8Array(salt.length + 4);
-      blockMsg.set(salt, 0);
-      blockMsg[salt.length] = (block >>> 24) & 255;
-      blockMsg[salt.length + 1] = (block >>> 16) & 255;
-      blockMsg[salt.length + 2] = (block >>> 8) & 255;
-      blockMsg[salt.length + 3] = block & 255;
-      var U = hmacSha256(password, blockMsg);
-      var T = new Uint8Array(U);
-      for (var r = 1; r < iterations; r++) {
-        U = hmacSha256(password, U);
-        for (var m = 0; m < 32; m++) T[m] ^= U[m];
-      }
-      var start = (block - 1) * 32;
-      for (var q = 0; q < 32 && (start + q) < dkLen; q++) out[start + q] = T[q];
-    }
-    return out;
-  }
-
-  /* ---------------- 密钥流(计数器模式 HMAC) ---------------- */
-
-  function stretch(key32, len) {
-    var out = new Uint8Array(len);
-    var cnt = new Uint8Array(4);
-    var counter = 0, pos = 0;
-    while (pos < len) {
-      cnt[0] = (counter >>> 24) & 255;
-      cnt[1] = (counter >>> 16) & 255;
-      cnt[2] = (counter >>> 8) & 255;
-      cnt[3] = counter & 255;
-      var h = hmacSha256(key32, cnt);
-      for (var j = 0; j < 32 && pos < len; j++) out[pos++] = h[j];
-      counter++;
-    }
-    return out;
-  }
-
-  /* ---------------- UTF-8 ---------------- */
-
-  function utf8Encode(str) {
-    var bytes = [];
-    for (var i = 0; i < str.length; i++) {
-      var code = str.charCodeAt(i);
-      if (code >= 0xD800 && code <= 0xDBFF && i + 1 < str.length) {
-        var lo = str.charCodeAt(i + 1);
-        if (lo >= 0xDC00 && lo <= 0xDFFF) {
-          code = 0x10000 + ((code - 0xD800) << 10) + (lo - 0xDC00);
-          i++;
-        }
-      }
-      if (code < 0x80) bytes.push(code);
-      else if (code < 0x800) bytes.push(0xC0 | (code >> 6), 0x80 | (code & 63));
-      else if (code < 0x10000) bytes.push(0xE0 | (code >> 12), 0x80 | ((code >> 6) & 63), 0x80 | (code & 63));
-      else bytes.push(0xF0 | (code >> 18), 0x80 | ((code >> 12) & 63), 0x80 | ((code >> 6) & 63), 0x80 | (code & 63));
-    }
-    return Uint8Array.from(bytes);
-  }
-
-  function utf8DecodeStrict(bytes) {
-    function fail() { throw new Error('BAD_UTF8'); }
-    var out = [];
-    var i = 0, n = bytes.length;
-    while (i < n) {
-      var b0 = bytes[i], cp, need;
-      if (b0 < 0x80) { out.push(b0); i++; continue; }
-      else if ((b0 & 0xE0) === 0xC0) { need = 1; cp = b0 & 0x1F; }
-      else if ((b0 & 0xF0) === 0xE0) { need = 2; cp = b0 & 0x0F; }
-      else if ((b0 & 0xF8) === 0xF0) { need = 3; cp = b0 & 0x07; }
-      else fail();
-      if (i + need >= n) fail();
-      for (var j = 1; j <= need; j++) {
-        var bn = bytes[i + j];
-        if ((bn & 0xC0) !== 0x80) fail();
-        cp = (cp << 6) | (bn & 0x3F);
-      }
-      if ((need === 1 && cp < 0x80) || (need === 2 && cp < 0x800) || (need === 3 && cp < 0x10000)) fail();
-      if (cp > 0x10FFFF || (cp >= 0xD800 && cp <= 0xDFFF)) fail();
-      i += need + 1;
-      if (cp <= 0xFFFF) out.push(cp);
-      else {
-        cp -= 0x10000;
-        out.push(0xD800 + ((cp >> 10) & 0x3FF), 0xDC00 + (cp & 0x3FF));
-      }
-    }
-    return String.fromCharCode.apply(null, out);
-  }
-
-  /* ---------------- hex / base64 ---------------- */
-
-  function bytesToHex(b) {
-    var s = '';
-    for (var i = 0; i < b.length; i++) {
-      var h = b[i].toString(16);
-      s += (h.length < 2) ? '0' + h : h;
-    }
-    return s;
-  }
-
-  function hexToBytes(hex) {
-    var out = new Uint8Array(hex.length / 2);
-    for (var i = 0; i < hex.length; i += 2) out[i / 2] = parseInt(hex.substr(i, 2), 16);
-    return out;
-  }
-
-  var B64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
-
-  function bytesToBase64(bytes) {
-    var s = '';
-    for (var i = 0; i < bytes.length; i += 3) {
-      var b0 = bytes[i];
-      var b1 = (i + 1 < bytes.length) ? bytes[i + 1] : -1;
-      var b2 = (i + 2 < bytes.length) ? bytes[i + 2] : -1;
-      s += B64.charAt(b0 >> 2);
-      s += B64.charAt(((b0 & 3) << 4) | (b1 >= 0 ? (b1 >> 4) : 0));
-      s += (b1 >= 0) ? B64.charAt(((b1 & 15) << 2) | (b2 >= 0 ? (b2 >> 6) : 0)) : '=';
-      s += (b2 >= 0) ? B64.charAt(b2 & 63) : '=';
-    }
-    return s;
-  }
-
-  function base64ToBytes(s) {
-    var lut = {};
-    for (var i = 0; i < 64; i++) lut[B64.charAt(i)] = i;
-    var clean = s.replace(/[\r\n]/g, '');
-    var out = [];
-    var n = clean.length;
-    for (i = 0; i < n; i += 4) {
-      var c0 = lut[clean.charAt(i)], c1 = lut[clean.charAt(i + 1)];
-      if (c0 === undefined || c1 === undefined) throw new Error('BAD_B64');
-      var has2 = (i + 2 < n) && clean.charAt(i + 2) !== '=';
-      var has3 = (i + 3 < n) && clean.charAt(i + 3) !== '=';
-      var c2 = has2 ? lut[clean.charAt(i + 2)] : 0;
-      var c3 = has3 ? lut[clean.charAt(i + 3)] : 0;
-      out.push((c0 << 2) | (c1 >> 4));
-      if (has2) out.push(((c1 & 15) << 4) | (c2 >> 2));
-      if (has3) out.push(((c2 & 3) << 6) | c3);
-    }
-    return Uint8Array.from(out);
-  }
-
-  /* ---------------- 加密 / 解密 ---------------- */
-
-  function deriveKey(password, saltHex, iterations) {
-    return pbkdf2(utf8Encode(password), hexToBytes(saltHex), iterations, KEY_LEN);
-  }
-
-  function encrypt(plainText, password, saltHex, iterations) {
-    var data = utf8Encode(MARKER + plainText);
-    var key = deriveKey(password, saltHex, iterations);
-    var ks = stretch(key, data.length);
-    var cipher = new Uint8Array(data.length);
-    for (var i = 0; i < data.length; i++) cipher[i] = data[i] ^ ks[i];
-    return bytesToBase64(cipher);
-  }
-
-  function decrypt(cipherB64, password, saltHex, iterations) {
-    var cipher = base64ToBytes(cipherB64);
-    var key = deriveKey(password, saltHex, iterations);
-    var ks = stretch(key, cipher.length);
-    var data = new Uint8Array(cipher.length);
-    for (var i = 0; i < cipher.length; i++) data[i] = cipher[i] ^ ks[i];
-    var text = utf8DecodeStrict(data);
-    if (text.slice(0, MARKER.length) !== MARKER) throw new Error('BAD_PASSWORD');
-    return text.slice(MARKER.length);
-  }
-
-  /* ---------------- 导出 ---------------- */
-
-  var api = {
-    MARKER: MARKER,
-    DEFAULT_ITER: DEFAULT_ITER,
-    utf8Encode: utf8Encode,
-    utf8DecodeStrict: utf8DecodeStrict,
-    bytesToHex: bytesToHex,
-    hexToBytes: hexToBytes,
-    bytesToBase64: bytesToBase64,
-    base64ToBytes: base64ToBytes,
-    sha256: sha256,
-    hmacSha256: hmacSha256,
-    pbkdf2: pbkdf2,
-    stretch: stretch,
-    deriveKey: deriveKey,
-    encrypt: encrypt,
-    decrypt: decrypt
-  };
-
-  if (typeof module !== 'undefined' && module.exports) module.exports = api;
-  else root.GditCrypto = api;
-})(typeof self !== 'undefined' ? self : this);
-
+    /* ===== 本页密文（build.js 注入，base64；正文明文不在本文件里）===== */
+    var payload = {"v":1,"iter":20000,"salt":"876b1189bf311251af6898eeb32d7432","c":"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"};
 
     (function () {
+      'use strict';
 
-      // 加密数据（由 build.js 注入）
-      var payload = {"v":1,"iter":20000,"salt":"797f1db95fa92be291dcece5a57dddc7","c":"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"};
+      var payloadData = payload;
 
-      var lockCard = document.getElementById('lockCard');
-      var profileCard = document.getElementById('profileCard');
-      var form = document.getElementById('loginForm');
-      var input = document.getElementById('pwInput');
-      var btn = document.getElementById('enterBtn');
-      var msgLine = document.getElementById('msgLine');
+      var gate     = document.getElementById('gate');
+      var host     = document.getElementById('pageHost');
+      var form     = document.getElementById('gateForm');
+      var input    = document.getElementById('pwInput');
+      var btn      = document.getElementById('gateBtn');
+      var msgLine  = document.getElementById('gateMsg');
+      var actions  = document.getElementById('pageActions');
       var busy = false;
 
-      /* ===== 站点级公共逻辑（由 build.js 注入，两页共用）===== */
-      var SESSION_KEY = 'gdit_unlock_v1';
+      /* ===== 站点级公共逻辑（六页共用）：会话免二次密码 + ?pw= 自动填入 ===== */
+      var SESSION_KEY = 'gdit_unlock_v3';
 
       function readSession() {
         try { return sessionStorage.getItem(SESSION_KEY) || ""; } catch (e) { return ""; }
@@ -563,110 +183,107 @@
         return pw;
       }
 
-      /** 解锁成功后打开右下角浮动操作组（跳另一页 + 锁定）*/
-      function showActions() {
-        var box = document.getElementById("pageActions");
-        if (box) box.hidden = false;
-      }
-
-      /** 锁定：清掉会话密码，回到锁屏（公共电脑临时离开时用）*/
-      function lockNow() {
-        clearSession();
-        location.reload();
-      }
-
-
-      function render(plain) {
-        profileCard.innerHTML = plain;
-        profileCard.classList.remove('reveal');
-        void profileCard.offsetWidth;
-        profileCard.classList.add('reveal');
-        lockCard.style.display = 'none';
-        profileCard.hidden = false;
-        document.title = '个人简介';
-        showActions();
+      /** 解锁：关掉门禁，显示正文与浮动操作组 */
+      function unlock(html) {
+        host.innerHTML = html;
+        host.hidden = false;
+        host.classList.add("reveal");
+        gate.hidden = true;
+        document.body.classList.add("is-unlocked");
+        document.documentElement.classList.add("is-unlocked");
+        if (actions) actions.hidden = false;
         window.scrollTo(0, 0);
       }
 
       function shake() {
-        lockCard.classList.remove('shake');
-        void lockCard.offsetWidth; // 重新触发动画
-        lockCard.classList.add('shake');
+        gate.classList.remove("shake");
+        void gate.offsetWidth; // 重新触发抖动动画
+        gate.classList.add("shake");
+      }
+
+      /** 门禁忙碌态：解密是同步重计算，先禁用交互避免卡片 */
+      function setBusy(isBusy) {
+        busy = isBusy;
+        btn.disabled = isBusy;
+        if (window.gditSetThemeToggleBusy) window.gditSetThemeToggleBusy(isBusy);
       }
 
       /** 尝试解密并渲染。silent=true 时不提示错误（用于自动解锁）。返回是否成功。 */
       function attempt(pw, silent) {
         var plain;
         try {
-          plain = GditCrypto.decrypt(payload.c, pw, payload.salt, payload.iter);
+          plain = GditCrypto.decrypt(payloadData.c, pw, payloadData.salt, payloadData.iter);
         } catch (e) { plain = null; }
         if (plain === null) {
-          if (!silent) { shake(); msgLine.textContent = '密码错误，请重试'; }
+          if (!silent) { shake(); msgLine.textContent = "密码错误，请重试"; }
           return false;
         }
         var data;
         try { data = JSON.parse(plain); } catch (e) { data = null; }
-        if (!data || typeof data.html !== 'string') {
-          if (!silent) { shake(); msgLine.textContent = '内容损坏，无法解密'; }
+        if (!data || typeof data.html !== "string") {
+          if (!silent) { shake(); msgLine.textContent = "内容损坏，无法解密"; }
           return false;
         }
         saveSession(pw);
-        render(data.html);
+        unlock(data.html);
         return true;
       }
 
-      form.addEventListener('submit', function (e) {
+      /* ---- 手动解锁 ---- */
+      form.addEventListener("submit", function (e) {
         e.preventDefault();
         if (busy) return;
         var pw = input.value;
         if (!pw) { input.focus(); return; }
-        busy = true;
-        btn.disabled = true;
-        msgLine.textContent = '';
-        // 让出一帧，先刷新按钮禁用态
+        msgLine.textContent = "";
+        setBusy(true);
+        // 让出一帧，先刷新按钮的禁用态再开始重计算
         setTimeout(function () {
           attempt(pw, false);
-          busy = false;
-          btn.disabled = false;
-          if (lockCard.style.display !== 'none' && input.value) {
-            input.value = ''; input.focus();
-          }
+          setBusy(false);
+          if (!gate.hidden && input.value) { input.value = ""; input.focus(); }
         }, 30);
       });
 
-      input.addEventListener('keydown', function (e) {
-        if (e.key === 'Escape') { input.value = ''; }
+      input.addEventListener("keydown", function (e) {
+        if (e.key === "Escape") { input.value = ""; }
       });
 
-      // ===== 1) 会话内已解锁过：直接进正文，不再弹锁屏 =====
+      /* ---- 1) 本次会话已解锁过：直接进正文，不再弹锁屏 ---- */
       var saved = readSession();
-      if (saved && attempt(saved, true)) {
-        // 已在正文页，收工
-      } else if (saved) {
-        clearSession(); // 存的是旧密码（比如重新 build 换了密码），丢掉
+      if (saved) {
+        setBusy(true);
+        var ok = attempt(saved, true);
+        setBusy(false);
+        if (!ok) clearSession(); // 存的是旧密码（比如重新 build 换了密码），丢掉重来
       }
 
-      // ===== 2) 地址栏 ?pw= / #pw=：填进输入框，等用户点解锁 =====
-      var fromUrl = takePwFromUrl();
-      if (fromUrl) {
-        input.value = fromUrl;
-        input.style.borderColor = '#667eea';
-        input.style.boxShadow = '0 0 0 3px rgba(102,126,234,0.25)';
-        input.focus();
-        input.select();
-      } else {
-        input.focus();
-      }
-
-      input.addEventListener('input', function () {
-        if (input.style.borderColor === '#667eea') {
-          input.style.borderColor = '';
-          input.style.boxShadow = '';
+      /* ---- 2) 地址栏 ?pw= / #pw=：填进输入框，等用户点解锁 ---- */
+      if (!gate.hidden) {
+        var fromUrl = takePwFromUrl();
+        if (fromUrl) {
+          input.value = fromUrl;
+          input.style.borderColor = "#8fb6ec";
+          input.style.boxShadow = "0 0 0 3px rgba(143,182,236,0.25)";
+          input.focus();
+          input.select();
+        } else {
+          input.focus();
         }
-      });
+        input.addEventListener("input", function () {
+          if (input.style.borderColor === "rgb(143, 182, 236)") {
+            input.style.borderColor = "";
+            input.style.boxShadow = "";
+          }
+        });
+      }
 
-      var lockBtn = document.getElementById('lockBtn');
-      if (lockBtn) lockBtn.addEventListener('click', lockNow);
+      /* ---- 3) 锁定：清掉会话密码，回到锁屏 ---- */
+      var lockBtn = document.getElementById("lockBtn");
+      if (lockBtn) lockBtn.addEventListener("click", function () {
+        clearSession();
+        location.reload();
+      });
     })();
   </script>
 </body>

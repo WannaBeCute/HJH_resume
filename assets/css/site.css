@@ -1,0 +1,1042 @@
+/* ===========================================================================
+   site.css —— 多页简历站的共享设计系统
+   ---------------------------------------------------------------------------
+   【定位】这是「页面外层」的样式：页头导航、页脚、封面、目录、内容卡片、
+           锁定门禁、浮动操作组、主题变量。
+           简历正文自己的排版样式仍在 assets/css/resume.css（由 jianli/ 生成）。
+
+   【保留了什么】原单页站的两大视觉特征一个没丢：
+     1) 背景图 assets/img/default.png + filter: blur(10px) + 兜底 #1b1b23
+        （见下面 body::before，inset 外扩 40px 补偿模糊后的边缘露白）；
+     2) 蓝色商务风主色 #1f5ea8 / #164a87 / #eaf2fb。
+   【新增了什么】参考页的结构骨架：页头导航 + 目录 + 页脚站点地图 +
+     回到顶部按钮 + 深/浅色切换（默认深色 = 您现在看到的效果）。
+
+   【改配色/改布局搜这些关键字】
+     · 主题色、页面底色      → 搜 ":root"
+     · 背景图模糊半径        → 搜 "blur(10px)"
+     · 页头 / 页脚           → 搜 ".site-header" / ".site-footer"
+     · 首页封面 + 目录       → 搜 ".home-hero" / ".contents-list"
+     · 锁屏门禁              → 搜 ".gate"
+   =========================================================================== */
+
+/* ===========================================================================
+   1. 设计令牌：颜色 / 字体 / 尺寸
+   =========================================================================== */
+
+:root {
+  /* ---- 蓝色商务风主色（沿用原简历模板） ---- */
+  --brand: #1f5ea8;
+  --brand-dark: #164a87;
+  --brand-light: #eaf2fb;
+
+  /* ---- 中性色：正文 ---- */
+  --text: #2a2a2a;
+  --muted: #666;
+  --border: #d8d8d8;
+
+  /* ---- 简历纸 ---- */
+  --bg: #f2f2f2;
+  --paper: #ffffff;
+
+  /* ---- 页面外壳（深色外观为默认，改动前请确认用户是故意切换风格） ---- */
+  --shell-bg: #1b1b23;          /* 背景图没加载出来时的兜底底色 */
+  --shell-surface: rgba(26, 27, 38, 0.78);   /* 页头 / 页脚 / 卡片底 */
+  --shell-surface-solid: #20212e;
+  --shell-border: rgba(255, 255, 255, 0.14);
+  --shell-text: #eef1fb;
+  --shell-muted: #a7aec9;
+  --shell-accent: #8fb6ec;      /* 深色底上的品牌蓝（提亮，保证对比度） */
+  --shell-shadow: 0 18px 50px rgba(0, 0, 0, 0.45);
+
+  /* ---- 尺寸与节奏 ---- */
+  --shell-width: 960px;
+  --radius-lg: 20px;
+  --radius-md: 12px;
+  --radius-pill: 999px;
+
+  /* ---- 字体：正文无衬线；标题可选衬线（Noto Serif SC 已随包提供） ---- */
+  --font-sans: "Microsoft YaHei", "PingFang SC", "Helvetica Neue", Arial, sans-serif;
+  --font-serif: "Noto Serif SC", "Songti SC", "SimSun", serif;
+}
+
+/* ---- 浅色外观：点页头「浅色」按钮切换，选择存 localStorage ---- */
+:root[data-theme="light"] {
+  --shell-surface: rgba(255, 255, 255, 0.86);
+  --shell-surface-solid: #ffffff;
+  --shell-border: rgba(31, 94, 168, 0.18);
+  --shell-text: #1f2333;
+  --shell-muted: #5c6479;
+  --shell-accent: var(--brand);
+  --shell-shadow: 0 18px 50px rgba(20, 40, 80, 0.18);
+}
+
+/* ===========================================================================
+   2. 基础排版
+   =========================================================================== */
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  color: var(--shell-text);
+  font: 14px/1.7 var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ⚠️ 关键覆盖：assets/css/resume.css（源自 jianli/styles.css）会给 body 铺一层
+   不透明的浅灰底 #f2f2f2。那样会把 body::before 的背景图整个盖住，
+   页面就丢了「default.png + 模糊 10px」的观感。这里把它让开，
+   由 body::before 负责背景图、body::after 负责压暗遮罩。 */
+body {
+  background-color: transparent !important;
+  background-image: none !important;
+}
+
+/* 跳转到正文的链接：平时藏起来，键盘聚焦时才出现 */
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 200;
+  padding: 10px 16px;
+  font-size: 13px;
+  color: #fff;
+  background: var(--brand);
+  border-radius: 0 0 var(--radius-md) 0;
+  text-decoration: none;
+}
+
+.skip-link:focus {
+  left: 0;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+a {
+  color: var(--shell-accent);
+}
+
+/* ===========================================================================
+   3. 背景图：保留「default.png + 模糊 10px」的既有效果
+   ---------------------------------------------------------------------------
+   用 fixed 的 ::before 承载图片（而不是给 body 加 filter），
+   否则 filter:blur 会把正文一起糊掉；inset 外扩 40px 补偿模糊后的边缘露白。
+   ⚠️ 改模糊半径就改下面这一行 blur(10px)。
+   =========================================================================== */
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: -40px;
+  z-index: -1;
+  background: #1b1b23 url('../img/default.png') center center / cover no-repeat;
+  filter: blur(10px);
+  pointer-events: none;
+}
+
+/* 深色遮罩：把背景压暗一点，保证白色文字可读（不改变背景图本身） */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(180deg, rgba(14, 15, 22, 0.62), rgba(14, 15, 22, 0.78));
+  pointer-events: none;
+}
+:root[data-theme="light"] body::after {
+  background: linear-gradient(180deg, rgba(240, 244, 252, 0.72), rgba(240, 244, 252, 0.85));
+}
+
+/* ===========================================================================
+   4. 页头导航
+   =========================================================================== */
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: var(--shell-surface);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--shell-border);
+}
+
+.header-inner {
+  max-width: var(--shell-width);
+  margin: 0 auto;
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.brand {
+  font-family: var(--font-serif);
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  color: var(--shell-text);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.brand:hover {
+  color: var(--shell-accent);
+}
+
+.site-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 2px;
+  margin-left: auto;
+}
+
+.site-nav a {
+  position: relative;
+  padding: 6px 11px;
+  font-size: 13.5px;
+  color: var(--shell-muted);
+  text-decoration: none;
+  border-radius: var(--radius-pill);
+  transition: color .18s, background .18s;
+}
+
+.site-nav a:hover {
+  color: var(--shell-text);
+  background: rgba(143, 182, 236, 0.14);
+}
+
+/* 当前页：高亮 + 下方短线 */
+.site-nav a[aria-current="page"] {
+  color: var(--shell-text);
+  font-weight: 600;
+  background: rgba(143, 182, 236, 0.18);
+}
+
+/* 主题切换按钮 */
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 13px;
+  font: inherit;
+  font-size: 12.5px;
+  color: var(--shell-text);
+  background: transparent;
+  border: 1px solid var(--shell-border);
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  transition: border-color .18s, background .18s;
+}
+
+.theme-toggle:hover {
+  border-color: var(--shell-accent);
+  background: rgba(143, 182, 236, 0.12);
+}
+
+.theme-toggle svg {
+  width: 15px;
+  height: 15px;
+}
+
+/* 默认（深色）显示太阳图标表示「可切到浅色」，浅色时反过来 */
+.theme-toggle .icon-sun { display: inline-block; }
+.theme-toggle .icon-moon { display: none; }
+:root[data-theme="light"] .theme-toggle .icon-sun { display: none; }
+:root[data-theme="light"] .theme-toggle .icon-moon { display: inline-block; }
+
+/* ===========================================================================
+   5. 主体容器
+   =========================================================================== */
+
+.site-main {
+  flex: 1 0 auto;
+  width: 100%;
+  max-width: var(--shell-width);
+  margin: 0 auto;
+  padding: 28px 20px 56px;
+}
+
+/* ===========================================================================
+   6. 锁屏门禁（gate）
+   ---------------------------------------------------------------------------
+   正文 <section class="page-content" hidden>，解锁后由脚本移除 hidden。
+   页头导航与页脚不在门禁内：站点结构始终可见，正文始终是密文。
+   =========================================================================== */
+
+.gate[hidden] {
+  display: none;
+}
+
+.gate-inner {
+  max-width: 460px;
+  margin: 24px auto 0;
+  padding: 34px 32px 30px;
+  text-align: center;
+  background: var(--shell-surface-solid);
+  border: 1px solid var(--shell-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shell-shadow);
+}
+
+.gate-ico {
+  width: 76px;
+  height: 76px;
+  margin: 0 auto 16px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  box-shadow: 0 8px 20px rgba(102, 126, 234, .4);
+}
+
+.gate-title {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: 23px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  color: var(--shell-text);
+}
+
+.gate-sub {
+  margin: 8px 0 22px;
+  font-size: 13px;
+  line-height: 1.8;
+  color: var(--shell-muted);
+}
+
+.gate-form input {
+  width: 100%;
+  padding: 13px 16px;
+  font: inherit;
+  font-size: 16px;
+  color: var(--shell-text);
+  background: transparent;
+  border: 1.5px solid var(--shell-border);
+  border-radius: var(--radius-md);
+  outline: none;
+  transition: border-color .2s, box-shadow .2s;
+}
+
+.gate-form input::placeholder {
+  color: var(--shell-muted);
+}
+
+.gate-form input:focus {
+  border-color: var(--shell-accent);
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, .22);
+}
+
+.gate-form button {
+  width: 100%;
+  margin-top: 12px;
+  padding: 13px 16px;
+  font: inherit;
+  font-size: 16px;
+  font-weight: bold;
+  letter-spacing: 6px;
+  color: #fff;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: transform .1s, box-shadow .2s, opacity .2s;
+}
+
+.gate-form button:hover { box-shadow: 0 8px 20px rgba(102, 126, 234, .4); }
+.gate-form button:active { transform: translateY(1px); }
+.gate-form button:disabled { opacity: .6; cursor: wait; }
+
+.gate-msg {
+  min-height: 22px;
+  margin: 14px 0 0;
+  font-size: 13px;
+  color: #ff8b82;
+}
+
+.gate-foot {
+  margin: 4px 0 0;
+  font-size: 12px;
+  color: var(--shell-muted);
+}
+
+/* 密码错误时的抖动 */
+@keyframes gate-shake {
+  10%, 90% { transform: translateX(-2px); }
+  20%, 80% { transform: translateX(3px); }
+  30%, 50%, 70% { transform: translateX(-5px); }
+  40%, 60% { transform: translateX(5px); }
+}
+
+.gate.shake .gate-inner { animation: gate-shake .45s ease; }
+
+/* 解锁后正文淡入 */
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* 正文淡入：#pageHost 是外层容器，.page-content 是每页正文自己的外壳 */
+#pageHost.reveal,
+.page-content.reveal { animation: fade-up .5s ease; }
+
+/* ===========================================================================
+   7. 通用内容卡片 / 蓝色标题块（沿用原简历模板的观感）
+   =========================================================================== */
+
+.panel {
+  background: var(--shell-surface-solid);
+  border: 1px solid var(--shell-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shell-shadow);
+  padding: 26px 30px 30px;
+  margin-bottom: 22px;
+}
+
+.panel > .section:first-child { margin-top: 0; }
+.panel > .section:last-child  { margin-bottom: 0; }
+
+/* 蓝色标题块：从卡片左边缘伸出去，沿用 jianli/styles.css 的做法 */
+.section {
+  padding: 0 0 0 30px;
+  margin: 22px 0 0;
+}
+
+.section-title {
+  display: inline-block;
+  margin: 0 0 12px -30px;
+  padding: 6px 18px 6px 30px;
+  background: var(--brand);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  border-radius: 0 4px 4px 0;
+}
+
+.section-note {
+  margin: -4px 0 12px;
+  font-size: 12.5px;
+  color: var(--shell-muted);
+}
+
+/* 简历正文里的深色文字：卡片底是白的，正文一律用深色 */
+.panel,
+.panel p,
+.panel li,
+.panel .entry-body,
+.panel .bullets li,
+.panel .self-eval {
+  color: var(--text);
+}
+
+.panel .section-title { color: #fff; }
+
+/* ---- 经历条目（教育 / 工作 / 校园 / 比赛） ---- */
+.entry { margin-bottom: 4px; }
+
+.entry-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 12px;
+  margin: 4px 0 6px;
+  font-size: 14px;
+}
+
+.entry-head .time { color: var(--muted); font-size: 13px; }
+.entry-head .school { font-weight: 700; }
+.entry-head .degree { color: var(--brand-dark); font-weight: 500; }
+
+.entry-body {
+  margin: 4px 0 8px;
+  font-size: 13.5px;
+}
+
+.bullets {
+  margin: 4px 0 10px;
+  padding-left: 20px;
+}
+
+.bullets li {
+  margin: 3px 0;
+  font-size: 13.5px;
+}
+
+.self-eval {
+  margin: 4px 0 18px;
+  font-size: 13.5px;
+  line-height: 1.85;
+}
+
+/* ===========================================================================
+   7b. 身份卡 / 基本信息表 / 标签组（「关于我」页用）
+   =========================================================================== */
+
+.profile-card {
+  text-align: center;
+  padding: 28px 30px;
+}
+
+.profile-avatar {
+  width: 84px;
+  height: 84px;
+  margin: 0 auto 16px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: #fff;
+  font-family: var(--font-serif);
+  font-size: 34px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  box-shadow: 0 8px 20px rgba(102, 126, 234, .38);
+}
+
+.profile-name {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: 27px;
+  font-weight: 600;
+  letter-spacing: 4px;
+  color: var(--text);
+}
+
+.profile-role {
+  margin: 6px 0 0;
+  font-size: 13.5px;
+  color: var(--muted);
+}
+
+/* ---- 标签 <-> 值 两列表 ---- */
+.info-list {
+  margin: 0;
+}
+
+.info-item {
+  display: flex;
+  gap: 14px;
+  padding: 11px 0;
+  border-bottom: 1px solid #f0f0f5;
+}
+
+.info-item:last-child {
+  border-bottom: none;
+}
+
+.info-item .label {
+  flex: 0 0 76px;
+  margin: 0;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.info-item .value {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  line-height: 1.7;
+}
+
+.school-link {
+  color: #d32f2f;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.school-link:hover {
+  text-decoration: underline;
+}
+
+/* ---- 标签组：竞赛 / 爱好 ---- */
+.tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 6px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tag {
+  display: inline-block;
+  padding: 6px 14px;
+  font-size: 13px;
+  color: var(--brand);
+  background: var(--brand-light);
+  border-radius: var(--radius-pill);
+  text-decoration: none;
+  transition: background .15s, transform .1s;
+}
+
+a.tag { cursor: pointer; }
+
+a.tag:hover {
+  background: #dfe4ff;
+  transform: translateY(-1px);
+}
+
+a.tag:active { transform: translateY(0); }
+
+/* 不能点的标签（比如「健身」）用灰底，区别于可跳转的链接 */
+.tag-plain {
+  color: var(--muted);
+  background: #eef0f5;
+}
+
+/* ===========================================================================
+   7c. 简历纸：座右铭 + 斜条纹 + 基本信息双列 + 课程列表
+   （沿用 jianli/styles.css 的蓝色商务风，只是把「A4 纸」换成站内卡片）
+   =========================================================================== */
+
+.resume-paper {
+  padding: 0;
+  overflow: hidden;
+}
+
+/* 顶部：座右铭 + 右上角蓝白斜条纹 */
+.resume-head {
+  position: relative;
+  padding: 22px 30px;
+  background: #f5f5f5;
+  border-bottom: 2px solid var(--brand);
+  overflow: hidden;
+}
+
+.motto {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--brand-dark);
+  letter-spacing: .5px;
+}
+
+/* 纯 CSS 渐变条纹，无图片依赖 */
+.diagonal-stripes {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 150px;
+  height: 100%;
+  background: repeating-linear-gradient(
+    -45deg,
+    var(--brand) 0,
+    var(--brand) 14px,
+    #ffffff 14px,
+    #ffffff 28px
+  );
+  opacity: .85;
+}
+
+/* 简历纸内部的第一段/最后一段，让上下留白对称 */
+.resume-paper > .section:first-of-type { margin-top: 20px; }
+.resume-paper > .section:last-of-type { margin-bottom: 24px; }
+
+/* ---- 基本信息：左列 + 右列 + 头像 ---- */
+.info-grid {
+  display: flex;
+  gap: 30px;
+  align-items: flex-start;
+  padding-bottom: 6px;
+}
+
+.info-col {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.info-col p {
+  margin: 4px 0;
+  font-size: 13.5px;
+}
+
+.info-col .label {
+  display: inline-block;
+  min-width: 76px;
+  font-weight: 600;
+}
+
+.info-grid .avatar {
+  flex: 0 0 auto;
+}
+
+.info-grid .avatar img {
+  width: 100px;
+  height: 120px;
+  object-fit: cover;
+  border: 1px solid var(--border);
+  background: var(--brand-light);
+}
+
+/* ---- 课程列表 ---- */
+.course-list {
+  margin: 4px 0 0;
+  padding-left: 20px;
+}
+
+.course-list li {
+  margin: 6px 0;
+  font-size: 13.5px;
+  line-height: 1.75;
+}
+
+/* ===========================================================================
+   8. 首页：封面 + 目录
+   =========================================================================== */
+
+.home-hero {
+  text-align: center;
+  padding: 30px 20px 26px;
+}
+
+.home-eyebrow {
+  margin: 0 0 14px;
+  font-size: 12.5px;
+  letter-spacing: 3px;
+  color: var(--shell-accent);
+}
+
+.home-copy h1 {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: 40px;
+  font-weight: 600;
+  letter-spacing: 6px;
+  line-height: 1.25;
+}
+
+.home-copy h1 span {
+  display: block;
+  margin-top: 8px;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 400;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--shell-muted);
+}
+
+.cover-rule {
+  width: 96px;
+  margin: 20px auto;
+  border: none;
+  border-top: 2px solid var(--shell-accent);
+}
+
+.home-role {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+
+.home-school {
+  margin: 6px 0 0;
+  font-size: 13.5px;
+  color: var(--shell-muted);
+}
+
+/* ---- 目录：编号 + 页名 + 一句说明 ---- */
+.contents-title {
+  margin: 0 0 16px;
+  font-family: var(--font-serif);
+  font-size: 17px;
+  letter-spacing: 4px;
+  color: var(--shell-text);
+}
+
+.contents-title span {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--shell-muted);
+}
+
+.contents-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.contents-list li + li { border-top: 1px solid var(--shell-border); }
+
+.contents-list a {
+  display: grid;
+  grid-template-columns: 44px 1fr;
+  grid-template-areas: "index name" "index desc";
+  align-items: center;
+  gap: 2px 14px;
+  padding: 15px 6px;
+  text-decoration: none;
+  color: inherit;
+  transition: background .18s, padding-left .18s;
+  border-radius: var(--radius-md);
+}
+
+.contents-list a:hover {
+  background: rgba(143, 182, 236, 0.12);
+  padding-left: 12px;
+}
+
+.contents-index {
+  grid-area: index;
+  font-family: var(--font-serif);
+  font-size: 20px;
+  color: var(--shell-accent);
+  opacity: .85;
+}
+
+.contents-name {
+  grid-area: name;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+
+.contents-desc {
+  grid-area: desc;
+  font-size: 12.5px;
+  color: var(--shell-muted);
+}
+
+/* ===========================================================================
+   9. 页脚站点地图
+   =========================================================================== */
+
+.site-footer {
+  flex-shrink: 0;
+  background: var(--shell-surface);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-top: 1px solid var(--shell-border);
+}
+
+.footer-inner {
+  max-width: var(--shell-width);
+  margin: 0 auto;
+  padding: 22px 20px 26px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 18px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.footer-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  font-size: 12.5px;
+}
+
+.footer-nav a {
+  color: var(--shell-muted);
+  text-decoration: none;
+}
+
+.footer-nav a:hover {
+  color: var(--shell-accent);
+  text-decoration: underline;
+}
+
+.footer-meta {
+  margin: 0;
+  font-size: 12px;
+  color: var(--shell-muted);
+}
+
+.footer-meta a {
+  color: var(--shell-muted);
+  text-decoration: none;
+}
+
+.footer-meta a:hover {
+  color: var(--shell-accent);
+  text-decoration: underline;
+}
+
+/* ===========================================================================
+   10. 浮动操作组：跳另一页 + 锁定（解锁后才出现，由脚本移除 hidden）
+   =========================================================================== */
+
+.page-actions {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 99;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.page-actions[hidden] { display: none; }
+
+.action-btn {
+  padding: 9px 18px;
+  font: inherit;
+  font-size: 13px;
+  line-height: 1.4;
+  border: none;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  text-decoration: none;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, .25);
+  transition: transform .1s, box-shadow .2s, background .2s;
+}
+
+.action-btn:hover { transform: translateY(-1px); }
+.action-btn:active { transform: translateY(0); }
+
+.action-nav {
+  color: #fff;
+  font-weight: bold;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+}
+
+.action-nav:hover { box-shadow: 0 8px 20px rgba(102, 126, 234, .5); }
+
+.action-lock {
+  color: #fff;
+  background: rgba(31, 94, 168, .85);
+}
+
+.action-lock:hover { background: rgba(31, 94, 168, 1); }
+
+/* ===========================================================================
+   11. 回到顶部按钮（滚动一段距离后由 site.js 显示）
+   =========================================================================== */
+
+.to-top {
+  position: fixed;
+  left: 18px;
+  bottom: 18px;
+  z-index: 99;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--shell-text);
+  background: var(--shell-surface);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid var(--shell-border);
+  border-radius: 50%;
+  cursor: pointer;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(8px);
+  transition: opacity .22s, transform .22s, visibility .22s, border-color .18s;
+}
+
+.to-top.is-visible {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.to-top:hover { border-color: var(--shell-accent); }
+
+/* ===========================================================================
+   12. 响应式
+   =========================================================================== */
+
+@media (max-width: 720px) {
+  .header-inner {
+    padding: 10px 16px;
+    gap: 10px;
+  }
+
+  /* 导航换到第二行，横向可滑动，不换行堆高 */
+  .site-nav {
+    order: 3;
+    width: 100%;
+    margin-left: 0;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 2px;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .site-nav a { white-space: nowrap; }
+
+  .site-main { padding: 20px 16px 48px; }
+
+  .panel { padding: 20px 20px 24px; }
+
+  .section { padding-left: 20px; }
+
+  .section-title {
+    margin-left: -20px;
+    padding-left: 20px;
+  }
+
+  .home-copy h1 { font-size: 30px; letter-spacing: 4px; }
+  .home-copy h1 span { letter-spacing: 2px; }
+
+  .footer-inner {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 18px 16px 22px;
+  }
+}
+
+/* ===========================================================================
+   13. 打印：白底、隐藏页面外壳与浮动控件
+   =========================================================================== */
+
+@media print {
+  body {
+    background: #fff;
+    color: #000;
+  }
+
+  body::before,
+  body::after {
+    display: none;
+  }
+
+  .site-header,
+  .site-footer,
+  .gate,
+  .page-actions,
+  .to-top {
+    display: none !important;
+  }
+
+  .site-main {
+    max-width: none;
+    padding: 0;
+  }
+
+  .panel {
+    box-shadow: none;
+    border: none;
+    padding: 0;
+  }
+
+  .contents-list a:hover { background: none; padding-left: 6px; }
+
+  .section { page-break-inside: avoid; }
+}

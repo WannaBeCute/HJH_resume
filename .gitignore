@@ -9,3 +9,7 @@ desktop.ini
 *~
 .idea/
 .vscode/
+
+# 站点说明文档：按用户要求不入库（仓库根目录只放页面与 assets）
+README.txt
+README.md
